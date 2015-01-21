@@ -20,6 +20,9 @@ public class Robot extends SampleRobot {
 	Joystick stickLeft;
 	Joystick stickRight;
 	Solenoid testSolenoid;
+	
+	Servo cameraServo;
+	double cameraServoValue;
 
 	public Robot() {
 
@@ -33,6 +36,8 @@ public class Robot extends SampleRobot {
 		stickRight = new Joystick(1);
 
 		testSolenoid = new Solenoid(3);
+		
+		cameraServo = new Servo(7);
 		
 	}
 
@@ -75,10 +80,19 @@ public class Robot extends SampleRobot {
 
 	public void manipulatorControl() {
 
-		if (stickRight.getButton(ButtonType.kTrigger)) {
+		if (stickRight.getRawButton(1)) {
 			testSolenoid.set(true);
 		} else {
 			testSolenoid.set(false);
 		}
+		
+		if(stickRight.getRawButton(4)){
+			cameraServoValue -= .01;
+		}
+		if(stickRight.getRawButton(5)){
+			cameraServoValue += .01;
+		}
+		
+		cameraServo.set(cameraServoValue);
 	}
 }

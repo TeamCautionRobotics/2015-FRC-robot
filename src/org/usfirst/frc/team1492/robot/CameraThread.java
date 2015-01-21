@@ -29,6 +29,8 @@ public class CameraThread extends Thread {
 		while(!stop){
 			NIVision.IMAQdxGrab(session, frame, 1);
 			
+			
+			
 			Timer.delay(0.1);
 		}
 		NIVision.IMAQdxStopAcquisition(session);
