@@ -2,14 +2,10 @@
 
 package org.usfirst.frc.team1492.robot;
 
-import com.ni.vision.NIVision;
-import com.ni.vision.NIVision.Image;
-
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
-import edu.wpi.first.wpilibj.Joystick.ButtonType;
 
-;
+
 
 public class Robot extends SampleRobot {
 	Talon motorFL;
@@ -26,16 +22,17 @@ public class Robot extends SampleRobot {
 
 	public Robot() {
 
-		motorFL = new Talon(0);
-		motorFR = new Talon(1);
-		motorBL = new Talon(2);
-		motorBR = new Talon(3);
+		motorFL = new Talon(1);
+		motorFR = new Talon(3);
+		motorBL = new Talon(0);
+		motorBR = new Talon(2);
+		
 		motorMid = new Talon(4);
 
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
 
-		testSolenoid = new Solenoid(3);
+//		testSolenoid = new Solenoid(0);
 		
 		cameraServo = new Servo(7);
 		
@@ -64,7 +61,7 @@ public class Robot extends SampleRobot {
 	}
 
 	public void driveControl() {
-		double leftSide = stickLeft.getAxis(AxisType.kY);
+		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
 		double horizontal = (stickLeft.getAxis(AxisType.kX) + stickRight.getAxis(AxisType.kX)) / 2;
 
@@ -80,19 +77,25 @@ public class Robot extends SampleRobot {
 
 	public void manipulatorControl() {
 
-		if (stickRight.getRawButton(1)) {
-			testSolenoid.set(true);
-		} else {
-			testSolenoid.set(false);
-		}
+//		if (stickRight.getRawButton(1)) {
+//			testSolenoid.set(true);
+//		} else {
+//			testSolenoid.set(false);
+//		}
 		
 		if(stickRight.getRawButton(4)){
-			cameraServoValue -= .01;
+			cameraServoValue -= .05;
+			if(cameraServoValue<0){
+				cameraServoValue = 0;
+			}
 		}
 		if(stickRight.getRawButton(5)){
-			cameraServoValue += .01;
+			cameraServoValue += .05;
+			if(cameraServoValue>1){
+				cameraServoValue = 1;
+			}
 		}
-		
+
 		cameraServo.set(cameraServoValue);
 	}
 }
