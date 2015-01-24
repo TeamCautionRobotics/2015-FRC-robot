@@ -1,12 +1,8 @@
-
-
 package org.usfirst.frc.team1492.robot;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-
 
 public class Robot extends SampleRobot {
 	Talon motorFL;
@@ -19,21 +15,19 @@ public class Robot extends SampleRobot {
 	Joystick stickRight;
 	Joystick stickThree;
 	Solenoid testSolenoid;
-	
+
 	Servo cameraServo;
 	double cameraServoValue;
-	
+
 	DigitalInput limitSwitchElevatorTop;
 	DigitalInput limitSwitchElevatorBottom;
 	DigitalInput limitSwitchElevatorOne;
 	DigitalInput limitSwitchElevatorTwo;
 	DigitalInput limitSwitchElevatorThree;
-	
-	
+
 	double elevatorSpeed = 0;
 	double elevatorMaxSpeed = 1;
-	
-	
+
 	public Robot() {
 
 		motorFL = new Talon(1);
@@ -42,7 +36,7 @@ public class Robot extends SampleRobot {
 		motorBR = new Talon(2);
 
 		motorMid = new Talon(5);
-		
+
 		motorElevator = new Talon(4);
 
 		stickLeft = new Joystick(0);
@@ -50,26 +44,25 @@ public class Robot extends SampleRobot {
 		stickThree = new Joystick(2);
 
 		testSolenoid = new Solenoid(0);
-		
+
 		cameraServo = new Servo(7);
 
-		
 		limitSwitchElevatorBottom = new DigitalInput(0);
 		limitSwitchElevatorTop = new DigitalInput(1);
-		
+
 		limitSwitchElevatorOne = new DigitalInput(2);
-		
+
 		limitSwitchElevatorTwo = new DigitalInput(3);
 		limitSwitchElevatorThree = new DigitalInput(4);
-		 
+
 	}
 
 	public void autonomous() {
-		
+
 	}
 
 	public void operatorControl() {
-		//CameraThread c = new CameraThread();
+		// CameraThread c = new CameraThread();
 
 		while (isOperatorControl() && isEnabled()) {
 
@@ -78,8 +71,8 @@ public class Robot extends SampleRobot {
 
 			Timer.delay(0.005);
 		}
-		
-		//c.finish();
+
+		// c.finish();
 	}
 
 	public void test() {
@@ -89,7 +82,8 @@ public class Robot extends SampleRobot {
 	public void driveControl() {
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
-		double horizontal = (stickLeft.getAxis(AxisType.kX) + stickRight.getAxis(AxisType.kX)) / 2;
+		double horizontal = (stickLeft.getAxis(AxisType.kX) + stickRight
+				.getAxis(AxisType.kX)) / 2;
 
 		motorFL.set(leftSide);
 		motorBL.set(leftSide);
@@ -103,54 +97,58 @@ public class Robot extends SampleRobot {
 
 	public void manipulatorControl() {
 
-    	if (stickRight.getRawButton(1)) {
-    		testSolenoid.set(true);
+		if (stickRight.getRawButton(1)) {
+			testSolenoid.set(true);
 		} else {
 			testSolenoid.set(false);
 		}
-		
-		if(stickRight.getRawButton(4)){
+
+		if (stickRight.getRawButton(4)) {
 			cameraServoValue -= .05;
-			if(cameraServoValue<0){
+			if (cameraServoValue < 0) {
 				cameraServoValue = 0;
 			}
 		}
-		if(stickRight.getRawButton(5)){
+		if (stickRight.getRawButton(5)) {
 			cameraServoValue += .05;
-			if(cameraServoValue>1){
+			if (cameraServoValue > 1) {
 				cameraServoValue = 1;
 			}
 		}
 
 		cameraServo.set(cameraServoValue);
-		
-		//elevator limit switches not edge ones
-		
-		elevatorMaxSpeed = (stickThree.getAxis(AxisType.kZ)+1)/2;
+
+		// elevator limit switches not edge ones
+
+		elevatorMaxSpeed = (stickThree.getAxis(AxisType.kZ) + 1) / 2;
 		SmartDashboard.putNumber("elevatorMaxSpeed", elevatorMaxSpeed);
-		
-		SmartDashboard.putBoolean("!limitSwitchElevatorTop", !limitSwitchElevatorTop.get());
-		SmartDashboard.putBoolean("!limitSwitchElevatorBottom", !limitSwitchElevatorBottom.get());
-		SmartDashboard.putBoolean("!limitSwitchElevatorOne", !limitSwitchElevatorOne.get());
-		
-		
-		if(!limitSwitchElevatorOne.get() /*|| !limitSwitchElevatorTwo.get() || !limitSwitchElevatorThree.get()*/){
+
+		SmartDashboard.putBoolean("!limitSwitchElevatorTop",
+				!limitSwitchElevatorTop.get());
+		SmartDashboard.putBoolean("!limitSwitchElevatorBottom",
+				!limitSwitchElevatorBottom.get());
+		SmartDashboard.putBoolean("!limitSwitchElevatorOne",
+				!limitSwitchElevatorOne.get());
+
+		if (!limitSwitchElevatorOne.get() /*
+										 * || !limitSwitchElevatorTwo.get() ||
+										 * !limitSwitchElevatorThree.get()
+										 */) {
 			elevatorSpeed = 0;
 		}
-		
-		if(stickThree.getRawButton(3)){
+
+		if (stickThree.getRawButton(3)) {
 			elevatorSpeed = -elevatorMaxSpeed;
 		}
-		if(stickThree.getRawButton(2)){
+		if (stickThree.getRawButton(2)) {
 			elevatorSpeed = elevatorMaxSpeed;
 		}
-		
-		if(!limitSwitchElevatorTop.get() || !limitSwitchElevatorBottom.get()){
+
+		if (!limitSwitchElevatorTop.get() || !limitSwitchElevatorBottom.get()) {
 			elevatorSpeed = 0;
 		}
-		
+
 		motorElevator.set(elevatorSpeed);
-		
-		
+
 	}
 }
