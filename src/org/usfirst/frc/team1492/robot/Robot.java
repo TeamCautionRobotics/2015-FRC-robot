@@ -32,7 +32,6 @@ public class Robot extends SampleRobot {
 	
 	double elevatorSpeed = 0;
 	double elevatorMaxSpeed = 1;
-	double elevatorDir = 0;
 	
 	
 	public Robot() {
@@ -130,24 +129,23 @@ public class Robot extends SampleRobot {
 		elevatorMaxSpeed = (stickThree.getAxis(AxisType.kZ)+1)/2;
 		SmartDashboard.putNumber("elevatorMaxSpeed", elevatorMaxSpeed);
 		
-		SmartDashboard.putBoolean("limitSwitchElevatorTop", limitSwitchElevatorTop.get());
-		SmartDashboard.putBoolean("limitSwitchElevatorBottom", limitSwitchElevatorBottom.get());
+		SmartDashboard.putBoolean("!limitSwitchElevatorTop", !limitSwitchElevatorTop.get());
+		SmartDashboard.putBoolean("!limitSwitchElevatorBottom", !limitSwitchElevatorBottom.get());
+		SmartDashboard.putBoolean("!limitSwitchElevatorOne", !limitSwitchElevatorOne.get());
 		
 		
-		if(limitSwitchElevatorOne.get() || limitSwitchElevatorTwo.get() || limitSwitchElevatorThree.get()){
-			//elevatorSpeed = 0;
+		if(!limitSwitchElevatorOne.get() /*|| !limitSwitchElevatorTwo.get() || !limitSwitchElevatorThree.get()*/){
+			elevatorSpeed = 0;
 		}
 		
 		if(stickThree.getRawButton(3)){
-			elevatorDir = -1;
+			elevatorSpeed = -elevatorMaxSpeed;
 		}
 		if(stickThree.getRawButton(2)){
-			elevatorDir = 1;
+			elevatorSpeed = elevatorMaxSpeed;
 		}
 		
-		elevatorSpeed = elevatorDir*elevatorMaxSpeed;
-		
-		if(limitSwitchElevatorTop.get() || limitSwitchElevatorBottom.get()){
+		if(!limitSwitchElevatorTop.get() || !limitSwitchElevatorBottom.get()){
 			elevatorSpeed = 0;
 		}
 		
