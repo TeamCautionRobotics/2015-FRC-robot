@@ -13,29 +13,52 @@ public class Robot extends SampleRobot {
 	Talon motorBL;
 	Talon motorBR;
 	Talon motorMid;
+	Talon motorElevator;
 	Joystick stickLeft;
 	Joystick stickRight;
+	Joystick stickThree;
 	Solenoid testSolenoid;
 	
 	Servo cameraServo;
 	double cameraServoValue;
-
+	
+	DigitalInput limitSwitchElevatorTop;
+	DigitalInput limitSwitchElevatorBottom;
+	DigitalInput limitSwitchElevatorOne;
+	DigitalInput limitSwitchElevatorTwo;
+	DigitalInput limitSwitchElevatorThree;
+	
+	
+	double elevatorSpeed = 0;
+	double elevatorMaxSpeed = 1;
+	
+	
 	public Robot() {
 
 		motorFL = new Talon(1);
 		motorFR = new Talon(3);
 		motorBL = new Talon(0);
 		motorBR = new Talon(2);
-		
+
 		motorMid = new Talon(4);
+		
+		motorElevator = new Talon(5);
 
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
+		stickThree = new Joystick(2);
 
 //		testSolenoid = new Solenoid(0);
 		
 		cameraServo = new Servo(7);
+
+		limitSwitchElevatorTop = new DigitalInput(0);
+		limitSwitchElevatorBottom = new DigitalInput(1);
+		limitSwitchElevatorOne = new DigitalInput(2);
+		limitSwitchElevatorTwo = new DigitalInput(3);
+		limitSwitchElevatorThree = new DigitalInput(4);
 		
+		 
 	}
 
 	public void autonomous() {
@@ -97,5 +120,27 @@ public class Robot extends SampleRobot {
 		}
 
 		cameraServo.set(cameraServoValue);
+		
+		//elevator limit switches not edge ones
+		
+		if(limitSwitchElevatorOne.get() || limitSwitchElevatorTwo.get() || limitSwitchElevatorThree.get()){
+			elevatorSpeed = 0;
+		}
+		
+		if(stickThree.getRawButton(3)){
+			elevatorSpeed = -elevatorMaxSpeed;
+		}else if(stickThree.getRawButton(2)){
+			elevatorSpeed = elevatorMaxSpeed;
+		}
+		
+		if(limitSwitchElevatorTop.get() || limitSwitchElevatorBottom.get()){
+			elevatorSpeed = 0;
+		}
+		
+		
+		
+		motorElevator.set(elevatorSpeed);
+		
+		
 	}
 }
