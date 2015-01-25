@@ -103,11 +103,7 @@ public class Robot extends SampleRobot {
 
 	public void manipulatorControl() {
 
-		if (stickRight.getRawButton(1)) {
-			testSolenoid.set(true);
-		} else {
-			testSolenoid.set(false);
-		}
+		testSolenoid.set(stickRight.getRawButton(1));
 
 		if (stickRight.getRawButton(4)) {
 			cameraServoValue -= .05;
