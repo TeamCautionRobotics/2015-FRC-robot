@@ -19,7 +19,7 @@ public class Robot extends SampleRobot {
 	Talon motorElevator;
 	Joystick stickLeft;
 	Joystick stickRight;
-	Joystick stickThree;
+	Joystick stickAux;
 	Solenoid testSolenoid;
 
 	Servo cameraServo;
@@ -47,7 +47,7 @@ public class Robot extends SampleRobot {
 
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
-		stickThree = new Joystick(2);
+		stickAux = new Joystick(2);
 
 		testSolenoid = new Solenoid(0);
 
@@ -122,7 +122,7 @@ public class Robot extends SampleRobot {
 
 		// elevator limit switches not edge ones
 
-		elevatorMaxSpeed = (stickThree.getAxis(AxisType.kZ) + 1) / 2;
+		elevatorMaxSpeed = (stickAux.getAxis(AxisType.kZ) + 1) / 2;
 		SmartDashboard.putNumber("elevatorMaxSpeed", elevatorMaxSpeed);
 
 		SmartDashboard.putBoolean("!limitSwitchElevatorTop",
@@ -139,10 +139,10 @@ public class Robot extends SampleRobot {
 			elevatorSpeed = 0;
 		}
 
-		if (stickThree.getRawButton(3)) {
+		if (stickAux.getRawButton(3)) {
 			elevatorSpeed = -elevatorMaxSpeed;
 		}
-		if (stickThree.getRawButton(2)) {
+		if (stickAux.getRawButton(2)) {
 			elevatorSpeed = elevatorMaxSpeed;
 		}
 
