@@ -16,10 +16,13 @@ public class Robot extends SampleRobot {
 	Talon motorRF;
 	Talon motorRB;
 	Talon motorCenter; // Motor controller for the middle of the H
+
 	Talon motorElevator;
+
 	Joystick stickLeft;
 	Joystick stickRight;
 	Joystick stickAux;
+
 	Solenoid testSolenoid;
 
 	Servo cameraServo;
