@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot {
-	Talon motorFL;
-	Talon motorFR;
-	Talon motorBL;
-	Talon motorBR;
-	Talon motorMid;
+	Talon motorLF;
+	Talon motorLB;
+	Talon motorRF;
+	Talon motorRB;
+	Talon motorCenter; // Motor controller for the middle of the H
 	Talon motorElevator;
 	Joystick stickLeft;
 	Joystick stickRight;
@@ -36,12 +36,12 @@ public class Robot extends SampleRobot {
 
 	public Robot() {
 
-		motorFL = new Talon(1);
-		motorFR = new Talon(3);
-		motorBL = new Talon(0);
-		motorBR = new Talon(2);
+		motorLF = new Talon(1);
+		motorLB = new Talon(3);
+		motorRF = new Talon(0);
+		motorRB = new Talon(2);
 
-		motorMid = new Talon(5);
+		motorCenter = new Talon(5);
 
 		motorElevator = new Talon(4);
 
@@ -91,13 +91,13 @@ public class Robot extends SampleRobot {
 		double horizontal = (stickLeft.getAxis(AxisType.kX) + stickRight
 				.getAxis(AxisType.kX)) / 2;
 
-		motorFL.set(leftSide);
-		motorBL.set(leftSide);
+		motorLF.set(leftSide);
+		motorRF.set(leftSide);
 
-		motorFR.set(rightSide);
-		motorBR.set(rightSide);
+		motorLB.set(rightSide);
+		motorRB.set(rightSide);
 
-		motorMid.set(horizontal);
+		motorCenter.set(horizontal);
 
 	}
 
