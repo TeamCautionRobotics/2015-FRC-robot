@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -56,14 +57,14 @@ public class Robot extends SampleRobot {
 	
 	public Robot() {
 
-		motorLeft = new Talon(0);
-		motorRight = new Talon(1);
+		motorLeft = new Talon(1);
+		motorRight = new Talon(3);
 		
-		motorCenter = new Talon(2);
+		motorCenter = new Talon(0);
 		
 
-		motorLift = new Talon(3);
-		motorArm = new Talon(4);
+		motorLift = new Talon(4);
+		motorArm = new Talon(5);
 		
 		pistonArmTilt = new DoubleSolenoid(0, 1);
 		pistonHand = new Solenoid(2);
@@ -191,6 +192,26 @@ public class Robot extends SampleRobot {
 		
 		//
 		
+		//arm tilt
+		
+		pistonArmTilt.set(Value.kOff);
+		
+		if(stickAux.getRawButton(6)){//tilt forward
+			pistonArmTilt.set(Value.kForward);
+		}
+		
+		if(stickAux.getRawButton(7)){//tilt backward
+			pistonArmTilt.set(Value.kReverse);
+		}
+		
+		//
+		
+		//Hand
+		
+		pistonHand.set(stickAux.getRawButton(1));
+		
+		
+		//
 		
 		
 		
