@@ -121,8 +121,7 @@ public class Robot extends SampleRobot {
 	public void driveControl() {
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
-		double horizontal = (stickLeft.getAxis(AxisType.kX) + stickRight
-				.getAxis(AxisType.kX)) / 2;
+		double horizontal = Math.max(stickLeft.getAxis(AxisType.kX), stickRight.getAxis(AxisType.kX));
 
 		motorLeft.set(leftSide);
 
