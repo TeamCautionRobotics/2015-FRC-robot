@@ -7,7 +7,6 @@ import com.ni.vision.NIVision.Range;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.image.ColorImage;
 
 public class CameraThread extends Thread {
 	
