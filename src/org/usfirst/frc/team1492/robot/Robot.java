@@ -1,12 +1,12 @@
 package org.usfirst.frc.team1492.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.PIDController;
 
 public class Robot extends SampleRobot {
 	Talon motorL;
@@ -16,21 +16,15 @@ public class Robot extends SampleRobot {
 
 	Talon motorElevator;
 	
-	
-
 	Joystick stickLeft;
 	Joystick stickRight;
 	Joystick stickAux;
-
-	DigitalInput limitSwitchElevatorTop;
-	DigitalInput limitSwitchElevatorBottom;
-	DigitalInput limitSwitchElevatorOne;
-	DigitalInput limitSwitchElevatorTwo;
-	DigitalInput limitSwitchElevatorThree;
-
-	double elevatorSpeed = 0;
-	double elevatorMaxSpeed = 1;
-
+	
+	PIDController liftPIDController;
+	AnalogInput liftAnalogIn;
+	Talon liftMotor;
+	
+	
 	public Robot() {
 
 		motorL = new Talon(0);
@@ -44,14 +38,10 @@ public class Robot extends SampleRobot {
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
 		stickAux = new Joystick(2);
-
-		limitSwitchElevatorBottom = new DigitalInput(0);
-		limitSwitchElevatorTop = new DigitalInput(1);
-
-		limitSwitchElevatorOne = new DigitalInput(2);
-
-		limitSwitchElevatorTwo = new DigitalInput(3);
-		limitSwitchElevatorThree = new DigitalInput(4);
+		
+		liftPIDController = new PIDController(0, 0, 0, liftAnalogIn, liftMotor);
+		
+		liftPIDController.disable();
 
 	}
 
@@ -61,6 +51,8 @@ public class Robot extends SampleRobot {
 
 	public void operatorControl() {
 		// CameraThread c = new CameraThread();
+		
+		liftPIDController.enable();
 
 		while (isOperatorControl() && isEnabled()) {
 
@@ -69,6 +61,8 @@ public class Robot extends SampleRobot {
 
 			Timer.delay(0.005);
 		}
+		
+		liftPIDController.disable();
 
 		// c.finish();
 	}
@@ -93,38 +87,7 @@ public class Robot extends SampleRobot {
 
 	public void manipulatorControl() {
 
-
-		// elevator limit switches not edge ones
-
-		elevatorMaxSpeed = (stickAux.getAxis(AxisType.kZ) + 1) / 2;
-		SmartDashboard.putNumber("elevatorMaxSpeed", elevatorMaxSpeed);
-
-		SmartDashboard.putBoolean("!limitSwitchElevatorTop",
-				!limitSwitchElevatorTop.get());
-		SmartDashboard.putBoolean("!limitSwitchElevatorBottom",
-				!limitSwitchElevatorBottom.get());
-		SmartDashboard.putBoolean("!limitSwitchElevatorOne",
-				!limitSwitchElevatorOne.get());
-
-		if (!limitSwitchElevatorOne.get() /*
-										 * || !limitSwitchElevatorTwo.get() ||
-										 * !limitSwitchElevatorThree.get()
-										 */) {
-			elevatorSpeed = 0;
-		}
-
-		if (stickAux.getRawButton(3)) {
-			elevatorSpeed = -elevatorMaxSpeed;
-		}
-		if (stickAux.getRawButton(2)) {
-			elevatorSpeed = elevatorMaxSpeed;
-		}
-
-		if (!limitSwitchElevatorTop.get() || !limitSwitchElevatorBottom.get()) {
-			elevatorSpeed = 0;
-		}
-
-		motorElevator.set(elevatorSpeed);
+		
 
 	}
 }
