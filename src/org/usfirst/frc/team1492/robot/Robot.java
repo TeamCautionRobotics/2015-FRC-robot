@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,11 +21,6 @@ public class Robot extends SampleRobot {
 	Joystick stickLeft;
 	Joystick stickRight;
 	Joystick stickAux;
-
-	Solenoid testSolenoid;
-
-	Servo cameraServo;
-	double cameraServoValue;
 
 	DigitalInput limitSwitchElevatorTop;
 	DigitalInput limitSwitchElevatorBottom;
@@ -51,10 +44,6 @@ public class Robot extends SampleRobot {
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
 		stickAux = new Joystick(2);
-
-		testSolenoid = new Solenoid(0);
-
-		cameraServo = new Servo(7);
 
 		limitSwitchElevatorBottom = new DigitalInput(0);
 		limitSwitchElevatorTop = new DigitalInput(1);
@@ -104,22 +93,6 @@ public class Robot extends SampleRobot {
 
 	public void manipulatorControl() {
 
-		testSolenoid.set(stickRight.getRawButton(1));
-
-		if (stickRight.getRawButton(4)) {
-			cameraServoValue -= .05;
-			if (cameraServoValue < 0) {
-				cameraServoValue = 0;
-			}
-		}
-		if (stickRight.getRawButton(5)) {
-			cameraServoValue += .05;
-			if (cameraServoValue > 1) {
-				cameraServoValue = 1;
-			}
-		}
-
-		cameraServo.set(cameraServoValue);
 
 		// elevator limit switches not edge ones
 
