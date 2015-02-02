@@ -27,6 +27,14 @@ public class Robot extends SampleRobot {
 	Solenoid pistonLiftWidth;
 
 	PIDController PIDControllerLift;
+	String SMARTDASHBOARD_P_GAIN = "P gain";
+	String SMARTDASHBOARD_I_GAIN = "I gain";
+	String SMARTDASHBOARD_D_GAIN = "D gain";
+	String SMARTDASHBOARD_SETPOINT = "Setpoint";
+	String SMARTDASHBOARD_PID_ENABLE = "Enable PID controller";
+
+	String SMARTDASHBOARD_CURRENT_POSITION = "Current position";
+	String SMARTDASHBOARD_LIFT_MOTOR = "Lift motor speed";
 
 	AnalogInput analogLift;
 
@@ -134,26 +142,38 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("armLiftSpeed (rightStick)", armLiftSpeed);
 
 		// Lift Up/Down
-		if (stickAux.getRawButton(3)) {	// up
-			liftPos++;
-		}
-		if (stickAux.getRawButton(2)) {	// down
-			liftPos--;
+//		if (stickAux.getRawButton(3)) {	// up
+//			liftPos++;
+//		}
+//		if (stickAux.getRawButton(2)) {	// down
+//			liftPos--;
+//		}
+//
+//		if (liftPos > liftPosMax) {
+//			liftPos = liftPosMax;
+//		}
+//		if (liftPos < liftPosMin) {
+//			liftPos = liftPosMin;
+//		}
+
+		if (SmartDashboard.getBoolean(SMARTDASHBOARD_PID_ENABLE, false)) {
+			PIDControllerLift.enable();
+		} else {
+			PIDControllerLift.disable();
 		}
 
-		if (liftPos > liftPosMax) {
-			liftPos = liftPosMax;
-		}
-		if (liftPos < liftPosMin) {
-			liftPos = liftPosMin;
-		}
+		PIDControllerLift.setSetpoint(SmartDashboard.getNumber(SMARTDASHBOARD_SETPOINT, 0));
+		PIDControllerLift.setPID(SmartDashboard.getNumber(SMARTDASHBOARD_P_GAIN, 0),
+				SmartDashboard.getNumber(SMARTDASHBOARD_I_GAIN, 0), SmartDashboard.getNumber(SMARTDASHBOARD_D_GAIN, 0));
 
-		PIDControllerLift.setSetpoint(liftPosPresets[liftPos]);
-
-		if ((digitalInLiftTop.get() && liftPos == liftPosMax)
-				|| (digitalInLiftBottom.get() && liftPos == liftPosMin)) {
+		if (digitalInLiftTop.get() || digitalInLiftBottom.get()) {
 			motorLift.set(0);
+			PIDControllerLift.disable();
+			SmartDashboard.putBoolean(SMARTDASHBOARD_PID_ENABLE, false);
 		}
+
+		SmartDashboard.putNumber(SMARTDASHBOARD_LIFT_MOTOR, motorLift.get());
+		SmartDashboard.putNumber(SMARTDASHBOARD_CURRENT_POSITION, analogLift.pidGet());
 
 		// Arm Up/Down
 
