@@ -41,6 +41,7 @@ public class Robot extends SampleRobot {
 	Joystick stickLeft;
 	Joystick stickRight;
 	Joystick stickAux;
+	boolean[] stickAuxLastButton = new boolean[stickAux.getButtonCount()];
 	
 	
 	double motorLiftSpeed;
@@ -122,7 +123,7 @@ public class Robot extends SampleRobot {
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
 		double horizontal = stickLeft.getAxis(AxisType.kX);
-		horizontal = (horizontal > 0.2 || horizontal < -0.2) ? (horizontal-0.2) : 0;
+		horizontal = deadbandScale(horizontal, .2);
 		
 		motorLeft.set(leftSide);
 
@@ -145,10 +146,10 @@ public class Robot extends SampleRobot {
 		
 		
 		//Lift Up/Down
-		if(stickAux.getRawButton(3)){//up
+		if(stickAux.getRawButton(3) && !stickAuxLastButton[3]){//up fix holding
 			liftPos ++;
 		}
-		if(stickAux.getRawButton(2)){//down
+		if(stickAux.getRawButton(2) && !stickAuxLastButton[2]){//down
 			liftPos --;
 		}
 		
@@ -214,7 +215,17 @@ public class Robot extends SampleRobot {
 		//
 		
 		
-		
+		for(int i=1;i<stickAuxLastButton.length;i++){
+			stickAuxLastButton[i] = stickAux.getRawButton(7);
+		}
 
 	}
+	
+	
+	double deadbandScale(double input, double threshold){
+		return input > threshold ? (input - threshold)/(1-threshold) : input < -threshold ? (input + threshold)/(1-threshold) : 0;
+	}
+	
+	
+	
 }
