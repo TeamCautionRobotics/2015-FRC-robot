@@ -41,8 +41,10 @@ public class Robot extends SampleRobot {
 	Joystick stickAux;
 	boolean[] stickAuxLastButton = new boolean[stickAux.getButtonCount()];
 	
-	double motorLiftSpeed;
-	double armLiftSpeed;
+	double SETTING_hDriveDampening;
+	
+	double SETTING_motorLiftSpeed;
+	double SETTING_armLiftSpeed;
 
 	int liftPos = 0;
 	int liftPosMax = 4;
@@ -51,6 +53,8 @@ public class Robot extends SampleRobot {
 	int armSpeed = 0;
 
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
+	
+	double hCurrent;
 
 	public Robot() {
 
@@ -112,27 +116,35 @@ public class Robot extends SampleRobot {
 	}
 
 	public void driveControl() {
+		
+		SETTING_hDriveDampening = SmartDashboard.getNumber("hDriveDampening", 5);
+		
+		
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
-		double horizontal = stickLeft.getAxis(AxisType.kX);
-		horizontal = deadbandScale(horizontal, .2);
+		double hTarget = stickLeft.getAxis(AxisType.kX);
+		hTarget = deadbandScale(hTarget, .2);
+		hCurrent += (hTarget-hCurrent)/SETTING_hDriveDampening;
+		if((hTarget < 0 && hCurrent > 0) || (hTarget > 0 && hCurrent < 0)){
+			hCurrent = 0;
+		}
 		
 		motorLeft.set(leftSide);
 
 		motorRight.set(rightSide);
 
-		motorCenter.set(horizontal);
+		motorCenter.set(hCurrent);
 
 	}
 
 	public void manipulatorControl() {
 
 		// Calibration:
-		motorLiftSpeed = stickAux.getAxis(AxisType.kZ);
-		SmartDashboard.putNumber("motorLiftSpeed (auxStick)", motorLiftSpeed);
+		SETTING_motorLiftSpeed = stickAux.getAxis(AxisType.kZ);
+		SmartDashboard.putNumber("motorLiftSpeed (auxStick)", SETTING_motorLiftSpeed);
 
-		armLiftSpeed = stickRight.getAxis(AxisType.kZ);
-		SmartDashboard.putNumber("armLiftSpeed (rightStick)", armLiftSpeed);
+		SETTING_armLiftSpeed = stickRight.getAxis(AxisType.kZ);
+		SmartDashboard.putNumber("armLiftSpeed (rightStick)", SETTING_armLiftSpeed);
 		//
 		
 		
