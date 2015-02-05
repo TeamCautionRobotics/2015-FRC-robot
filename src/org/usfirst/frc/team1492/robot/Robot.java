@@ -59,12 +59,12 @@ public class Robot extends SampleRobot {
 	public Robot() {
 
 		motorLeft = new Talon(1);
-		motorRight = new Talon(3);
+		motorRight = new Talon(2);
 
 		motorCenter = new Talon(0);
 
 		motorLift = new Talon(4);
-		motorArm = new Talon(5);
+		motorArm = new Talon(3);
 
 		pistonArmTilt = new DoubleSolenoid(0, 1);
 		pistonHand = new Solenoid(2);
