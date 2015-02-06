@@ -26,7 +26,7 @@ public class Robot extends SampleRobot {
 	Solenoid pistonHand;
 	Solenoid pistonLiftWidth;
 
-	PIDController PIDControllerLift;
+	//PIDController PIDControllerLift;
 
 	AnalogInput analogLift;
 
@@ -78,10 +78,12 @@ public class Robot extends SampleRobot {
 		digitalInArmUp = new DigitalInput(2);
 		digitalInArmDown = new DigitalInput(3);
 
+		/*
 		PIDControllerLift = new PIDController(0, 0, 0, analogLift, motorLift);
 		PIDControllerLift.setInputRange(0, 1);
 		PIDControllerLift.setOutputRange(0, .5);
 		PIDControllerLift.disable();
+		*/
 
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
@@ -149,7 +151,8 @@ public class Robot extends SampleRobot {
 		
 		
 		//Lift Up/Down
-		if(stickAux.getRawButton(3) && !stickAuxLastButton[3]){//up fix holding
+		/* DISABLED PID
+		if(stickAux.getRawButton(3) && !stickAuxLastButton[3]){//up
 			liftPos ++;
 		}
 		if(stickAux.getRawButton(2) && !stickAuxLastButton[2]){//down
@@ -164,6 +167,16 @@ public class Robot extends SampleRobot {
 		}
 
 		PIDControllerLift.setSetpoint(liftPosPresets[liftPos]);
+		*/
+		
+		//Instead of PID
+		if(stickAux.getRawButton(3)){
+			motorLift.set(-0.1);
+		}
+		if(stickAux.getRawButton(2)){
+			motorLift.set(0.1);
+		}
+		//
 
 		if ((digitalInLiftTop.get() && liftPos == liftPosMax)
 				|| (digitalInLiftBottom.get() && liftPos == liftPosMin)) {
