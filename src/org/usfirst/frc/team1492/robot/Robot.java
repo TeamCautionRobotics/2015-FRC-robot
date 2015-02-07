@@ -127,9 +127,6 @@ public class Robot extends SampleRobot {
 		double hTarget = farthestFrom0(stickLeft.getAxis(AxisType.kX), stickRight.getAxis(AxisType.kX));
 		hTarget = deadbandScale(hTarget, .2);
 		hTarget /= 2;
-		if((hTarget < 0 && hCurrent > 0) || (hTarget > 0 && hCurrent < 0)){
-			hCurrent = 0;
-		}
 		
 		motorLeft.set(leftSide);
 
