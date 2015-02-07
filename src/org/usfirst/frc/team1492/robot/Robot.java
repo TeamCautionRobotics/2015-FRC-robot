@@ -98,7 +98,7 @@ public class Robot extends SampleRobot {
 	public void operatorControl() {
 		// CameraThread c = new CameraThread();
 
-		PIDControllerLift.enable();
+		//PIDControllerLift.enable();
 
 		while (isOperatorControl() && isEnabled()) {
 
@@ -108,7 +108,7 @@ public class Robot extends SampleRobot {
 			Timer.delay(0.005);
 		}
 
-		PIDControllerLift.disable();
+		//PIDControllerLift.disable();
 
 		// c.finish();
 	}
@@ -124,9 +124,9 @@ public class Robot extends SampleRobot {
 		
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
-		double hTarget = stickLeft.getAxis(AxisType.kX);
+		double hTarget = farthestFrom0(stickLeft.getAxis(AxisType.kX), stickRight.getAxis(AxisType.kX));
 		hTarget = deadbandScale(hTarget, .2);
-		hCurrent += (hTarget-hCurrent)/SETTING_hDriveDampening;
+		hTarget /= 2;
 		if((hTarget < 0 && hCurrent > 0) || (hTarget > 0 && hCurrent < 0)){
 			hCurrent = 0;
 		}
@@ -235,6 +235,14 @@ public class Robot extends SampleRobot {
 	
 	double deadbandScale(double input, double threshold){
 		return input > threshold ? (input - threshold)/(1-threshold) : input < -threshold ? (input + threshold)/(1-threshold) : 0;
+	}
+	
+	double farthestFrom0(double a, double b){
+		if(Math.abs(a) > Math.abs(b)){
+			return a;
+		}else{
+			return b;
+		}
 	}
 	
 	
