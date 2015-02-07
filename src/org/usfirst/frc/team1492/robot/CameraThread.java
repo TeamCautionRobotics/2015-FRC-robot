@@ -4,6 +4,8 @@ import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.ColorMode;
 import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.Range;
+import com.ni.vision.NIVision.ROI;
+import com.ni.vision.NIVision.CoordinateSystem;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Timer;

@@ -8,10 +8,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.PIDController;
 
 public class Robot extends SampleRobot {
 	Talon motorLeft;
@@ -22,9 +20,9 @@ public class Robot extends SampleRobot {
 	Talon motorLift;
 	Talon motorArm;
 
-	DoubleSolenoid pistonArmTilt;
-	Solenoid pistonHand;
-	Solenoid pistonLiftWidth;
+	DoubleSolenoid pistonArmTilt1;
+	DoubleSolenoid pistonArmTilt2;
+	DoubleSolenoid pistonLiftWidth;
 
 	//PIDController PIDControllerLift;
 
@@ -39,7 +37,7 @@ public class Robot extends SampleRobot {
 	Joystick stickLeft;
 	Joystick stickRight;
 	Joystick stickAux;
-	boolean[] stickAuxLastButton = new boolean[stickAux.getButtonCount()];
+	boolean[] stickAuxLastButton;
 	
 	double SETTING_hDriveDampening;
 	
@@ -57,7 +55,6 @@ public class Robot extends SampleRobot {
 	double hCurrent;
 
 	public Robot() {
-
 		motorLeft = new Talon(1);
 		motorRight = new Talon(2);
 
@@ -66,9 +63,9 @@ public class Robot extends SampleRobot {
 		motorLift = new Talon(4);
 		motorArm = new Talon(3);
 
-		pistonArmTilt = new DoubleSolenoid(0, 1);
-		pistonHand = new Solenoid(2);
-		pistonLiftWidth = new Solenoid(3);
+		pistonArmTilt1 = new DoubleSolenoid(0, 1);
+		pistonArmTilt2 = new DoubleSolenoid(2, 3);
+		pistonLiftWidth = new DoubleSolenoid(4, 5);
 
 		analogLift = new AnalogInput(0);
 
@@ -88,6 +85,8 @@ public class Robot extends SampleRobot {
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
 		stickAux = new Joystick(2);
+		
+		stickAuxLastButton = new boolean[stickAux.getButtonCount()];
 
 	}
 
@@ -146,6 +145,12 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("armLiftSpeed (rightStick)", SETTING_armLiftSpeed);
 		//
 		
+		//All the digital inputs:
+		SmartDashboard.putBoolean("digitalInLiftTop ("+digitalInLiftTop.getChannel()+")", digitalInLiftTop.get());
+		SmartDashboard.putBoolean("digitalInLiftBottom ("+digitalInLiftTop.getChannel()+")", digitalInLiftBottom.get());
+		SmartDashboard.putBoolean("digitalInArmUp ("+digitalInArmUp.getChannel()+")", digitalInArmUp.get());
+		SmartDashboard.putBoolean("digitalInArmDown ("+digitalInArmDown.getChannel()+")", digitalInArmDown.get());
+		//
 		
 		//Lift Up/Down
 		/* DISABLED PID
@@ -164,25 +169,26 @@ public class Robot extends SampleRobot {
 		}
 
 		PIDControllerLift.setSetpoint(liftPosPresets[liftPos]);
-		*/
-		
-		//Instead of PID
-		if(stickAux.getRawButton(3)){
-			motorLift.set(-0.1);
-		}
-		if(stickAux.getRawButton(2)){
-			motorLift.set(0.1);
-		}
-		//
 
 		if ((digitalInLiftTop.get() && liftPos == liftPosMax)
 				|| (digitalInLiftBottom.get() && liftPos == liftPosMin)) {
 			motorLift.set(0);
 		}
+		*/
+		
+		//Instead of PID
+		motorLift.set(0);
+		if(stickAux.getRawButton(3) && !digitalInLiftTop.get()){
+			motorLift.set(-SETTING_motorLiftSpeed);
+		}
+		if(stickAux.getRawButton(2) && !digitalInLiftBottom.get()){
+			motorLift.set(SETTING_motorLiftSpeed);
+		}
+		//
 
 		// Arm Up/Down
 
-		motorArm.set(stickAux.getAxis(AxisType.kY));
+		motorArm.set(stickAux.getAxis(AxisType.kY) * SETTING_armLiftSpeed);
 
 		if ((digitalInArmUp.get() && armSpeed > 0)
 				|| (digitalInArmDown.get() && armSpeed < 0)) {
@@ -192,31 +198,27 @@ public class Robot extends SampleRobot {
 		// Lift Width in/out
 
 		if (stickAux.getRawButton(4)) {	// left out
-			pistonLiftWidth.set(true);
+			pistonLiftWidth.set(Value.kForward);
 		}
 
 		if (stickAux.getRawButton(5)) {	// right in
-			pistonLiftWidth.set(false);
+			pistonLiftWidth.set(Value.kReverse);
 		}
 
 		// arm tilt
 
-		pistonArmTilt.set(Value.kOff);
+		pistonArmTilt1.set(Value.kOff);
+		pistonArmTilt2.set(Value.kOff);
 
 		if (stickAux.getRawButton(6)) {	// tilt forward
-			pistonArmTilt.set(Value.kForward);
+			pistonArmTilt1.set(Value.kForward);
+			pistonArmTilt2.set(Value.kForward);
 		}
 
 		if (stickAux.getRawButton(7)) {	// tilt backward
-			pistonArmTilt.set(Value.kReverse);
+			pistonArmTilt1.set(Value.kReverse);
+			pistonArmTilt2.set(Value.kReverse);
 		}
-		
-		//
-		
-		//Hand
-		
-		pistonHand.set(stickAux.getRawButton(1));
-		
 		
 		//
 		
@@ -224,9 +226,6 @@ public class Robot extends SampleRobot {
 		for(int i=1;i<stickAuxLastButton.length;i++){
 			stickAuxLastButton[i] = stickAux.getRawButton(7);
 		}
-
-		// Hand
-		pistonHand.set(stickAux.getRawButton(1));
 	}
 	
 	
