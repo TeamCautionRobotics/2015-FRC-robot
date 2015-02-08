@@ -48,11 +48,7 @@ public class Robot extends SampleRobot {
 	int liftPosMax = 4;
 	int liftPosMin = 0;
 
-	int armSpeed = 0;
-
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
-	
-	double hCurrent;
 
 	public Robot() {
 		motorLeft = new Talon(1);
@@ -123,15 +119,15 @@ public class Robot extends SampleRobot {
 		
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
-		double hTarget = farthestFrom0(stickLeft.getAxis(AxisType.kX), stickRight.getAxis(AxisType.kX));
-		hTarget = deadbandScale(hTarget, .2);
-		hTarget /= 2;
+		double h = farthestFrom0(stickLeft.getAxis(AxisType.kX), stickRight.getAxis(AxisType.kX));
+		h = deadbandScale(h, .2);
+		//h /= 2;
 		
 		motorLeft.set(leftSide);
 
 		motorRight.set(rightSide);
 
-		motorCenter.set(hCurrent);
+		motorCenter.set(h);
 
 	}
 
@@ -177,23 +173,24 @@ public class Robot extends SampleRobot {
 		*/
 		
 		//Instead of PID
-		motorLift.set(0);
-		if(stickAux.getRawButton(3) && !digitalInLiftTop.get()){
-			motorLift.set(-SETTING_motorLiftSpeed);
+		double liftSpeed = 0;
+		if(stickAux.getRawButton(3) /*&& !digitalInLiftTop.get()*/){
+			liftSpeed = SETTING_motorLiftSpeed;
 		}
-		if(stickAux.getRawButton(2) && !digitalInLiftBottom.get()){
-			motorLift.set(SETTING_motorLiftSpeed);
+		if(stickAux.getRawButton(2) /*&& !digitalInLiftBottom.get()*/){
+			liftSpeed = -SETTING_motorLiftSpeed;
 		}
+		motorLift.set(liftSpeed);
 		//
 
 		// Arm Up/Down
-
-		motorArm.set(stickAux.getAxis(AxisType.kY) * SETTING_armLiftSpeed);
-
-		if ((digitalInArmUp.get() && armSpeed > 0)
+		
+		double armSpeed = stickAux.getAxis(AxisType.kY) * SETTING_armLiftSpeed;
+		/*if ((digitalInArmUp.get() && armSpeed > 0)
 				|| (digitalInArmDown.get() && armSpeed < 0)) {
-			motorArm.set(0);
-		}
+			armSpeed = 0;
+		}*/
+		motorArm.set(armSpeed);
 
 		// Lift Width in/out
 
