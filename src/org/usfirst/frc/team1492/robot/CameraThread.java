@@ -9,13 +9,15 @@ import com.ni.vision.NIVision.CoordinateSystem;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CameraThread extends Thread {
 	
 	int session;
 	Image frame;
 	
-	boolean stop = false;
+	boolean running;
+	int tick;
 
 	public CameraThread() {
 		
@@ -23,15 +25,19 @@ public class CameraThread extends Thread {
 		
 		session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 		NIVision.IMAQdxConfigureGrab(session);
-		
-		
-		this.start();
+
+		running = false;
+		tick = 0;
 	}
 	
 	@Override
 	public void run(){
 		NIVision.IMAQdxStartAcquisition(session);
-		while(!stop){
+		running = true;
+		while(running){
+			tick++;
+			SmartDashboard.putNumber("CameraThread Tick", tick);
+			
 			NIVision.IMAQdxGrab(session, frame, 1);
 			
 			Image filteredFrame = null;
@@ -40,13 +46,14 @@ public class CameraThread extends Thread {
 			
 			CameraServer.getInstance().setImage(filteredFrame);
 			
-			Timer.delay(0.1);
+			Timer.delay(0.01);
 		}
+		running = false;
 		NIVision.IMAQdxStopAcquisition(session);
 	}
 
 	public void finish() {
-		stop = true;
+		running = false;
 	}
 
 }

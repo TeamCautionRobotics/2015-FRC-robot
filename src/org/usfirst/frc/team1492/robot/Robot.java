@@ -1,11 +1,14 @@
 package org.usfirst.frc.team1492.robot;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
@@ -49,7 +52,16 @@ public class Robot extends SampleRobot {
 	int liftPosMin = 0;
 
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
+	
+	int autoModeNone = 0;
+	int autoModeMoveForward = 1;
+	int autoMode2 = 2;
+	int autoMode3 = 3;
+	int autoMode = autoModeNone;
 
+	Command autoCommand;
+	SendableChooser autoChooser;
+	
 	public Robot() {
 		motorLeft = new Talon(1);
 		motorRight = new Talon(2);
@@ -59,7 +71,7 @@ public class Robot extends SampleRobot {
 		motorLift = new Talon(4);
 		motorArm = new Talon(3);
 
-		pistonArmTilt1 = new DoubleSolenoid(0, 1);
+		pistonArmTilt1 = new DoubleSolenoid(1, 0);
 		pistonArmTilt2 = new DoubleSolenoid(2, 3);
 		pistonLiftWidth = new DoubleSolenoid(4, 5);
 
@@ -83,20 +95,31 @@ public class Robot extends SampleRobot {
 		stickAux = new Joystick(2);
 		
 		stickAuxLastButton = new boolean[stickAux.getButtonCount()];
-
+		
+		autoChooser = new SendableChooser();
+		autoChooser.addDefault("No Auto", autoModeNone);
+		autoChooser.addObject("Forward", autoModeMoveForward);
+		autoChooser.addObject("Auto 2", autoMode2);
+		autoChooser.addObject("Auto 3", autoMode3);
 	}
 
 	public void autonomous() {
 
+		autoMode = (int)autoChooser.getSelected();
+		
+		
 	}
 
 	public void operatorControl() {
-		// CameraThread c = new CameraThread();
+		CameraThread camThread = new CameraThread();
+		camThread.start();
 
 		//PIDControllerLift.enable();
 
 		while (isOperatorControl() && isEnabled()) {
-
+			
+			SmartDashboard.putBoolean("CameraThread Running", camThread.running);
+			
 			driveControl();
 			manipulatorControl();
 
@@ -105,7 +128,7 @@ public class Robot extends SampleRobot {
 
 		//PIDControllerLift.disable();
 
-		// c.finish();
+		camThread.finish();
 	}
 
 	public void test() {
@@ -134,16 +157,16 @@ public class Robot extends SampleRobot {
 	public void manipulatorControl() {
 
 		// Calibration:
-		SETTING_motorLiftSpeed = stickAux.getAxis(AxisType.kZ);
+		SETTING_motorLiftSpeed = ((-stickAux.getAxis(AxisType.kZ))/2)+.5;
 		SmartDashboard.putNumber("motorLiftSpeed (auxStick)", SETTING_motorLiftSpeed);
 
-		SETTING_armLiftSpeed = stickRight.getAxis(AxisType.kZ);
+		SETTING_armLiftSpeed = ((-stickRight.getAxis(AxisType.kZ))/2)+.5;
 		SmartDashboard.putNumber("armLiftSpeed (rightStick)", SETTING_armLiftSpeed);
 		//
 		
 		//All the digital inputs:
 		SmartDashboard.putBoolean("digitalInLiftTop ("+digitalInLiftTop.getChannel()+")", digitalInLiftTop.get());
-		SmartDashboard.putBoolean("digitalInLiftBottom ("+digitalInLiftTop.getChannel()+")", digitalInLiftBottom.get());
+		SmartDashboard.putBoolean("digitalInLiftBottom ("+digitalInLiftBottom.getChannel()+")", digitalInLiftBottom.get());
 		SmartDashboard.putBoolean("digitalInArmUp ("+digitalInArmUp.getChannel()+")", digitalInArmUp.get());
 		SmartDashboard.putBoolean("digitalInArmDown ("+digitalInArmDown.getChannel()+")", digitalInArmDown.get());
 		//
@@ -174,10 +197,10 @@ public class Robot extends SampleRobot {
 		
 		//Instead of PID
 		double liftSpeed = 0;
-		if(stickAux.getRawButton(3) /*&& !digitalInLiftTop.get()*/){
+		if(stickAux.getRawButton(3) && digitalInLiftTop.get()){
 			liftSpeed = SETTING_motorLiftSpeed;
 		}
-		if(stickAux.getRawButton(2) /*&& !digitalInLiftBottom.get()*/){
+		if(stickAux.getRawButton(2) && digitalInLiftBottom.get()){
 			liftSpeed = -SETTING_motorLiftSpeed;
 		}
 		motorLift.set(liftSpeed);
@@ -204,8 +227,8 @@ public class Robot extends SampleRobot {
 
 		// arm tilt
 
-		pistonArmTilt1.set(Value.kOff);
-		pistonArmTilt2.set(Value.kOff);
+//		pistonArmTilt1.set(Value.kOff);
+//		pistonArmTilt2.set(Value.kOff);
 
 		if (stickAux.getRawButton(6)) {	// tilt forward
 			pistonArmTilt1.set(Value.kForward);
@@ -231,11 +254,7 @@ public class Robot extends SampleRobot {
 	}
 	
 	double farthestFrom0(double a, double b){
-		if(Math.abs(a) > Math.abs(b)){
-			return a;
-		}else{
-			return b;
-		}
+		return (Math.abs(a) > Math.abs(b)) ? a : b;
 	}
 	
 	
