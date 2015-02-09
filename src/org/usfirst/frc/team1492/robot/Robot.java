@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends SampleRobot {
+	
+	
 	Talon motorLeft;
 	Talon motorRight;
 
@@ -53,11 +55,12 @@ public class Robot extends SampleRobot {
 
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
 	
-	int autoModeNone = 0;
-	int autoModeMoveForward = 1;
-	int autoMode2 = 2;
-	int autoMode3 = 3;
-	int autoMode = autoModeNone;
+	String autoModeNone = "None";
+	String autoModeMoveForward = "Move Forward";
+	String autoMode2 = "Two";
+	String autoMode3 = "Three";
+	
+	String autoMode = autoModeNone;
 
 	Command autoCommand;
 	SendableChooser autoChooser;
@@ -101,11 +104,23 @@ public class Robot extends SampleRobot {
 		autoChooser.addObject("Forward", autoModeMoveForward);
 		autoChooser.addObject("Auto 2", autoMode2);
 		autoChooser.addObject("Auto 3", autoMode3);
+		SmartDashboard.putData("Auto Mode", autoChooser);
 	}
 
 	public void autonomous() {
 
-		autoMode = (int)autoChooser.getSelected();
+		autoMode = (String)autoChooser.getSelected();
+		
+		SmartDashboard.putString("Start Auto", autoMode);
+		SmartDashboard.putString("End Auto", "");
+		
+		
+		
+		
+		
+		SmartDashboard.putString("End Auto", autoMode);
+		SmartDashboard.putString("Start Auto", "");
+		autoMode = autoModeNone;
 		
 		
 	}
@@ -163,6 +178,8 @@ public class Robot extends SampleRobot {
 		SETTING_armLiftSpeed = ((-stickRight.getAxis(AxisType.kZ))/2)+.5;
 		SmartDashboard.putNumber("armLiftSpeed (rightStick)", SETTING_armLiftSpeed);
 		//
+		
+		SmartDashboard.putNumber("AnalogLift PID ("+analogLift.getChannel()+")", analogLift.pidGet());
 		
 		//All the digital inputs:
 		SmartDashboard.putBoolean("digitalInLiftTop ("+digitalInLiftTop.getChannel()+")", digitalInLiftTop.get());
