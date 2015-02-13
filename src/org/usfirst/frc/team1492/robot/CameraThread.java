@@ -16,6 +16,8 @@ public class CameraThread extends Thread {
 	int session;
 	Image frame;
 	
+	boolean sessionStarted = false;
+
 	boolean running;
 	int tick;
 
@@ -25,6 +27,20 @@ public class CameraThread extends Thread {
 		
 		session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 		NIVision.IMAQdxConfigureGrab(session);
+
+		try {
+			session = NIVision
+					.IMAQdxOpenCamera(
+							"cam0",
+							NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			NIVision.IMAQdxConfigureGrab(session);
+			System.err.println("Camera Session Started");
+			sessionStarted = true;
+		} catch (Exception e) {
+			System.err.println("Camera Session Failed to start.");
+			sessionStarted = false;
+			e.printStackTrace();
+		}
 
 		running = false;
 		tick = 0;
@@ -49,7 +65,6 @@ public class CameraThread extends Thread {
 			Timer.delay(0.01);
 		}
 		running = false;
-		NIVision.IMAQdxStopAcquisition(session);
 	}
 
 	public void finish() {
