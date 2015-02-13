@@ -14,8 +14,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends SampleRobot {
-	
-	
+
 	Talon motorLeft;
 	Talon motorRight;
 
@@ -28,7 +27,7 @@ public class Robot extends SampleRobot {
 	DoubleSolenoid pistonArmTilt2;
 	DoubleSolenoid pistonLiftWidth;
 
-	//PIDController PIDControllerLift;
+	// PIDController PIDControllerLift;
 
 	AnalogInput analogLift;
 
@@ -42,9 +41,9 @@ public class Robot extends SampleRobot {
 	Joystick stickRight;
 	Joystick stickAux;
 	boolean[] stickAuxLastButton;
-	
+
 	double SETTING_hDriveDampening;
-	
+
 	double SETTING_motorLiftSpeed;
 	double SETTING_armLiftSpeed;
 
@@ -53,17 +52,17 @@ public class Robot extends SampleRobot {
 	int liftPosMin = 0;
 
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
-	
+
 	String autoModeNone = "None";
 	String autoModeMoveForward = "Move Forward";
 	String autoMode2 = "Two";
 	String autoMode3 = "Three";
-	
+
 	String autoMode = autoModeNone;
 
 	Command autoCommand;
 	SendableChooser autoChooser;
-	
+
 	public Robot() {
 		motorLeft = new Talon(1);
 		motorRight = new Talon(2);
@@ -86,18 +85,17 @@ public class Robot extends SampleRobot {
 		digitalInArmDown = new DigitalInput(3);
 
 		/*
-		PIDControllerLift = new PIDController(0, 0, 0, analogLift, motorLift);
-		PIDControllerLift.setInputRange(0, 1);
-		PIDControllerLift.setOutputRange(0, .5);
-		PIDControllerLift.disable();
-		*/
+		 * PIDControllerLift = new PIDController(0, 0, 0, analogLift,
+		 * motorLift); PIDControllerLift.setInputRange(0, 1);
+		 * PIDControllerLift.setOutputRange(0, .5); PIDControllerLift.disable();
+		 */
 
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
 		stickAux = new Joystick(2);
-		
+
 		stickAuxLastButton = new boolean[stickAux.getButtonCount()];
-		
+
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", autoModeNone);
 		autoChooser.addObject("Forward", autoModeMoveForward);
@@ -108,40 +106,36 @@ public class Robot extends SampleRobot {
 
 	public void autonomous() {
 
-		autoMode = (String)autoChooser.getSelected();
-		
+		autoMode = (String) autoChooser.getSelected();
+
 		SmartDashboard.putString("Start Auto", autoMode);
 		SmartDashboard.putString("End Auto", "");
-		
-		
-		
-		
-		
+
 		SmartDashboard.putString("End Auto", autoMode);
 		SmartDashboard.putString("Start Auto", "");
 		autoMode = autoModeNone;
-		
-		
+
 	}
 
 	public void operatorControl() {
 		CameraThread camThread = new CameraThread();
 		camThread.start();
+		SmartDashboard.putBoolean("Camera thread working", true);
 
-		//PIDControllerLift.enable();
+		// PIDControllerLift.enable();
 
 		while (isOperatorControl() && isEnabled()) {
-			
-			SmartDashboard.putBoolean("CameraThread Running", camThread.running);
-			
+
+			// SmartDashboard.putBoolean("CameraThread Running",
+			// camThread.running);
+
 			driveControl();
 			manipulatorControl();
 
 			Timer.delay(0.005);
 		}
 
-		//PIDControllerLift.disable();
-
+		// PIDControllerLift.disable();
 		camThread.finish();
 	}
 
@@ -150,16 +144,18 @@ public class Robot extends SampleRobot {
 	}
 
 	public void driveControl() {
-		
-		SETTING_hDriveDampening = SmartDashboard.getNumber("hDriveDampening", 5);
-		
-		
+
+		SETTING_hDriveDampening = SmartDashboard
+				.getNumber("hDriveDampening", 5);
+
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
 		double rightSide = stickRight.getAxis(AxisType.kY);
-		double h = farthestFrom0(stickLeft.getAxis(AxisType.kX), stickRight.getAxis(AxisType.kX));
+		double h = farthestFrom0(stickLeft.getAxis(AxisType.kX),
+				stickRight.getAxis(AxisType.kX));
 		h = deadbandScale(h, .2);
-		//h /= 2;
-		
+
+		// h /= 2;
+
 		motorLeft.set(leftSide);
 
 		motorRight.set(rightSide);
@@ -171,108 +167,110 @@ public class Robot extends SampleRobot {
 	public void manipulatorControl() {
 
 		// Calibration:
-		SETTING_motorLiftSpeed = ((-stickAux.getAxis(AxisType.kZ))/2)+.5;
-		SmartDashboard.putNumber("motorLiftSpeed (auxStick)", SETTING_motorLiftSpeed);
+		SETTING_motorLiftSpeed = ((-stickAux.getAxis(AxisType.kZ)) / 2) + .5;
+		SmartDashboard.putNumber("motorLiftSpeed (auxStick)",
+				SETTING_motorLiftSpeed);
 
-		SETTING_armLiftSpeed = ((-stickRight.getAxis(AxisType.kZ))/2)+.5;
-		SmartDashboard.putNumber("armLiftSpeed (rightStick)", SETTING_armLiftSpeed);
+		SETTING_armLiftSpeed = ((-stickRight.getAxis(AxisType.kZ)) / 2) + .5;
+		SmartDashboard.putNumber("armLiftSpeed (rightStick)",
+				SETTING_armLiftSpeed);
 		//
-		
-		SmartDashboard.putNumber("AnalogLift PID ("+analogLift.getChannel()+")", analogLift.pidGet());
-		
-		//All the digital inputs:
-		SmartDashboard.putBoolean("digitalInLiftTop ("+digitalInLiftTop.getChannel()+")", digitalInLiftTop.get());
-		SmartDashboard.putBoolean("digitalInLiftBottom ("+digitalInLiftBottom.getChannel()+")", digitalInLiftBottom.get());
-		SmartDashboard.putBoolean("digitalInArmUp ("+digitalInArmUp.getChannel()+")", digitalInArmUp.get());
-		SmartDashboard.putBoolean("digitalInArmDown ("+digitalInArmDown.getChannel()+")", digitalInArmDown.get());
+
+		SmartDashboard.putNumber("AnalogLift PID (" + analogLift.getChannel()
+				+ ")", analogLift.pidGet());
+
+		// All the digital inputs:
+		SmartDashboard.putBoolean(
+				"digitalInLiftTop (" + digitalInLiftTop.getChannel() + ")",
+				digitalInLiftTop.get());
+		SmartDashboard.putBoolean(
+				"digitalInLiftBottom (" + digitalInLiftBottom.getChannel()
+						+ ")", digitalInLiftBottom.get());
+		SmartDashboard.putBoolean(
+				"digitalInArmUp (" + digitalInArmUp.getChannel() + ")",
+				digitalInArmUp.get());
+		SmartDashboard.putBoolean(
+				"digitalInArmDown (" + digitalInArmDown.getChannel() + ")",
+				digitalInArmDown.get());
 		//
-		
-		//Lift Up/Down
-		/* DISABLED PID
-		if(stickAux.getRawButton(3) && !stickAuxLastButton[3]){//up
-			liftPos ++;
-		}
-		if(stickAux.getRawButton(2) && !stickAuxLastButton[2]){//down
-			liftPos --;
-		}
 
-		if (liftPos > liftPosMax) {
-			liftPos = liftPosMax;
-		}
-		if (liftPos < liftPosMin) {
-			liftPos = liftPosMin;
-		}
+		// Lift Up/Down
+		/*
+		 * DISABLED PID if(stickAux.getRawButton(3) &&
+		 * !stickAuxLastButton[3]){//up liftPos ++; }
+		 * if(stickAux.getRawButton(2) && !stickAuxLastButton[2]){//down liftPos
+		 * --; }
+		 * 
+		 * if (liftPos > liftPosMax) { liftPos = liftPosMax; } if (liftPos <
+		 * liftPosMin) { liftPos = liftPosMin; }
+		 * 
+		 * PIDControllerLift.setSetpoint(liftPosPresets[liftPos]);
+		 * 
+		 * if ((digitalInLiftTop.get() && liftPos == liftPosMax) ||
+		 * (digitalInLiftBottom.get() && liftPos == liftPosMin)) {
+		 * motorLift.set(0); }
+		 */
 
-		PIDControllerLift.setSetpoint(liftPosPresets[liftPos]);
-
-		if ((digitalInLiftTop.get() && liftPos == liftPosMax)
-				|| (digitalInLiftBottom.get() && liftPos == liftPosMin)) {
-			motorLift.set(0);
-		}
-		*/
-		
-		//Instead of PID
+		// Instead of PID
 		double liftSpeed = 0;
-		if(stickAux.getRawButton(3) && digitalInLiftTop.get()){
+		if (stickAux.getRawButton(3) && digitalInLiftTop.get()) {
 			liftSpeed = SETTING_motorLiftSpeed;
 		}
-		if(stickAux.getRawButton(2) && digitalInLiftBottom.get()){
+		if (stickAux.getRawButton(2) && digitalInLiftBottom.get()) {
 			liftSpeed = -SETTING_motorLiftSpeed;
 		}
 		motorLift.set(liftSpeed);
 		//
 
 		// Arm Up/Down
-		
+
 		double armSpeed = stickAux.getAxis(AxisType.kY) * SETTING_armLiftSpeed;
-		/*if ((digitalInArmUp.get() && armSpeed > 0)
-				|| (digitalInArmDown.get() && armSpeed < 0)) {
-			armSpeed = 0;
-		}*/
+		/*
+		 * if ((digitalInArmUp.get() && armSpeed > 0) || (digitalInArmDown.get()
+		 * && armSpeed < 0)) { armSpeed = 0; }
+		 */
 		motorArm.set(armSpeed);
 
 		// Lift Width in/out
 
-		if (stickAux.getRawButton(4)) {	// left out
+		if (stickAux.getRawButton(4)) { // left out
 			pistonLiftWidth.set(Value.kForward);
 		}
 
-		if (stickAux.getRawButton(5)) {	// right in
+		if (stickAux.getRawButton(5)) { // right in
 			pistonLiftWidth.set(Value.kReverse);
 		}
 
 		// arm tilt
 
-//		pistonArmTilt1.set(Value.kOff);
-//		pistonArmTilt2.set(Value.kOff);
+		// pistonArmTilt1.set(Value.kOff);
+		// pistonArmTilt2.set(Value.kOff);
 
-		if (stickAux.getRawButton(6)) {	// tilt forward
+		if (stickAux.getRawButton(6)) { // tilt forward
 			pistonArmTilt1.set(Value.kForward);
 			pistonArmTilt2.set(Value.kForward);
 		}
 
-		if (stickAux.getRawButton(7)) {	// tilt backward
+		if (stickAux.getRawButton(7)) { // tilt backward
 			pistonArmTilt1.set(Value.kReverse);
 			pistonArmTilt2.set(Value.kReverse);
 		}
-		
+
 		//
-		
-		
-		for(int i=1;i<stickAuxLastButton.length;i++){
+
+		for (int i = 1; i < stickAuxLastButton.length; i++) {
 			stickAuxLastButton[i] = stickAux.getRawButton(7);
 		}
 	}
-	
-	
-	double deadbandScale(double input, double threshold){
-		return input > threshold ? (input - threshold)/(1-threshold) : input < -threshold ? (input + threshold)/(1-threshold) : 0;
+
+	double deadbandScale(double input, double threshold) {
+		return input > threshold ? (input - threshold) / (1 - threshold)
+				: input < -threshold ? (input + threshold) / (1 - threshold)
+						: 0;
 	}
-	
-	double farthestFrom0(double a, double b){
+
+	double farthestFrom0(double a, double b) {
 		return (Math.abs(a) > Math.abs(b)) ? a : b;
 	}
-	
-	
-	
+
 }
