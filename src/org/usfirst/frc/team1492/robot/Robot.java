@@ -165,7 +165,7 @@ public class Robot extends SampleRobot {
 				currentTape.currentActionIndex = 0;
 			}
 			if(recordingTape && !SmartDashboard.getBoolean("Record", false)){
-				saveTape(currentTape, "tape1");
+				currentTape.saveTape("tape1");
 			}
 			recordingTape = SmartDashboard.getBoolean("Record", false);
 			
@@ -183,90 +183,13 @@ public class Robot extends SampleRobot {
 		camThread.finish();
 	}
 
-	private void saveTape(Tape tape, String name) {
-		String fileString = "";
-		for(int i = 0; i < tape.actionList.size(); i++){
-			Action action = tape.actionList.get(i);
-			String line = "";
-			
-			line += action.tick;
-			line += "," + action.type.ordinal();
-			
-			switch(action.type){
-				case axis:{
-					ActionAxis a = (ActionAxis)action;
-					line += "," + a.joystickIndex;
-					line += "," + a.index;
-					line += "," + a.value;
-				}
-					break;
-				case button:{
-					ActionButton a = (ActionButton)action;
-					line += "," + a.joystickIndex;
-					line += "," + a.index;
-					line += "," + a.value;
-				}
-					break;
-				default:
-					break;
-			}
-			
-			line += "\n";
-			fileString += line;
-		}
-		
-		//TODO Try to save file
-		SmartDashboard.putString("tape", fileString);
-		
-	}
-
-	private Tape loadTape(String name) {
-		Tape tape = new Tape();
-		
-		String fileString = "";
-		fileString = SmartDashboard.getString("tape"); // Load from dashboard
-		//TODO try to load from file
-		
-		String[] lines = fileString.split("\n");
-		for(int i=0;i<lines.length;i++){
-			String[] parts = lines[i].split(",");
-			long tick = Long.parseLong(parts[0]);
-			int type = Integer.parseInt(parts[1]);
-			Action action = null;
-			
-			switch(ActionType.values()[type]){
-				case axis:{
-					int joystickIndex = Integer.parseInt(parts[2]);
-					int index = Integer.parseInt(parts[3]);
-					double value = Double.parseDouble(parts[4]);
-					action = new ActionAxis(tick, joystickIndex, index, value);
-				}
-					break;
-				case button:{
-					int joystickIndex = Integer.parseInt(parts[2]);
-					int index = Integer.parseInt(parts[3]);
-					boolean value = Boolean.parseBoolean(parts[4]);
-					action = new ActionButton(tick, joystickIndex, index, value);
-				}
-					break;
-				default:
-					break;
-			}
-			
-			tape.addAction(action);
-			
-		}
-		
-		
-		return tape;
-	}
 
 	@Override
 	public void test() {
 		tapeTick = 0;
 		playingTape = true;
 		
-		Tape tempTape = loadTape("tape1");
+		Tape tempTape = Tape.loadTape("tape1");
 		if(tempTape.actionList.size() > 0){
 			currentTape = tempTape;
 		}
