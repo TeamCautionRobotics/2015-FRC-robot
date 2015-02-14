@@ -157,9 +157,23 @@ public class Robot extends SampleRobot {
 			// SmartDashboard.putBoolean("CameraThread Running",
 			// camThread.running);
 			
-
+			
+			if(!recordingTape && SmartDashboard.getBoolean("Record", false)){
+				tapeTick = 0;
+				currentTape.currentAction = 0;
+			}
 			recordingTape = SmartDashboard.getBoolean("Record", false);
+			
+			if(!playingTape && SmartDashboard.getBoolean("Play", false)){
+				tapeTick = 0;
+				currentTape.currentAction = 0;
+			}
 			playingTape = SmartDashboard.getBoolean("Play", false);
+			
+			
+			if(playingTape){
+				currentTape.play(tapeTick);
+			}
 			
 			driveControl();
 			manipulatorControl();

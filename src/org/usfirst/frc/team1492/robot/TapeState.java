@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class TapeState {
 	
 	HashMap<Joystick, TapeJoystick> joysticks;
+	long tick = 0;
 
 	public class TapeJoystick {
 		double[] axes;
