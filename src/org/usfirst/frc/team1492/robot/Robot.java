@@ -55,7 +55,7 @@ public class Robot extends SampleRobot {
 
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
 	
-	HashMap<Integer, String> autoModes;
+	HashMap<Integer, String> autoModes = new HashMap<Integer, String>();
 
 	int autoModeNone = 0;
 	int autoModeMoveForward = 1;
