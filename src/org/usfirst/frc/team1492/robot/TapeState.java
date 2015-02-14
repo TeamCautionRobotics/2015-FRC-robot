@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class TapeState {
 	
-	HashMap<Joystick, TapeJoystick> joysticks;
+	HashMap<Integer, TapeJoystick> joysticks = new HashMap<Integer, TapeJoystick>();
 	long tick = 0;
 
 	public class TapeJoystick {
@@ -19,25 +19,24 @@ public class TapeState {
 		}
 	}
 
-	public TapeJoystick getJoystick(Joystick realJoystick) {
+	public TapeJoystick getJoystick(int realJoystick) {
 		return joysticks.get(realJoystick);
 	}
 
 	public void change(Action action) {
 		switch(action.type){
-		case axis:{
-			ActionAxis a = (ActionAxis)action;
-			joysticks.get(a.realJoystick).axes[a.index] = a.value;
-		}
-			break;
-		case button:{
-			ActionButton a = (ActionButton)action;
-			joysticks.get(a.realJoystick).buttons[a.index] = a.value;
-		}
-			break;
-		default:
-			break;
-		
+			case axis:{
+				ActionAxis a = (ActionAxis)action;
+				joysticks.get(a.joystickIndex).axes[a.index] = a.value;
+			}
+				break;
+			case button:{
+				ActionButton a = (ActionButton)action;
+				joysticks.get(a.joystickIndex).buttons[a.index] = a.value;
+			}
+				break;
+			default:
+				break;
 		}
 	}
 

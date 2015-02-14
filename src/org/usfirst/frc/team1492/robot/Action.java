@@ -14,7 +14,7 @@ public abstract class Action {
 	
 	public static class ActionJoystick extends Action{
 		
-		Joystick realJoystick;
+		int joystickIndex;
 		
 	}
 	

@@ -11,10 +11,10 @@ public class ActionButton extends ActionJoystick{
 	int index;
 	boolean value;
 	
-	public ActionButton(long tick, Joystick realJoystick, int index, boolean value){
+	public ActionButton(long tick, int joystickIndex, int index, boolean value){
 		this.tick = tick;
 		this.type = ActionType.button;
-		this.realJoystick = realJoystick;
+		this.joystickIndex = joystickIndex;
 		this.index = index;
 		this.value = value;
 	}

@@ -5,22 +5,28 @@ import java.util.ArrayList;
 public class Tape {
 	
 	public ArrayList<Action> actionList = new ArrayList<Action>();
-	public int currentAction = 0;
+	public int currentActionIndex = 0;
 
 	public TapeState currentState;
 
 	public void addAction(Action action) {
-		
-		actionList.add(action);
-		currentState.change(action);
+		if(action != null){
+			actionList.add(action);
+			currentState.change(action);
+		}
 		
 	}
 
-	public void play(long tapeTick) {
+	public boolean play(long tapeTick) {
 		
-		while(actionList.get(currentAction).tick < tapeTick){
-			currentState.change(actionList.get(currentAction));
-			currentAction++;
+		if(currentActionIndex < actionList.size()){
+			while(actionList.get(currentActionIndex).tick < tapeTick){
+				currentState.change(actionList.get(currentActionIndex));
+				currentActionIndex++;
+			}
+			return true;
+		}else{
+			return false;
 		}
 		
 	}

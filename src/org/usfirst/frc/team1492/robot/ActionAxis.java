@@ -11,10 +11,10 @@ public class ActionAxis extends ActionJoystick{
 	int index;
 	double value;
 	
-	public ActionAxis(long tick, Joystick realJoystick, int index, double value){
+	public ActionAxis(long tick, int joystickIndex, int index, double value){
 		this.tick = tick;
 		this.type = ActionType.axis;
-		this.realJoystick = realJoystick;
+		this.joystickIndex = joystickIndex;
 		this.index = index;
 		this.value = value;
 	}
