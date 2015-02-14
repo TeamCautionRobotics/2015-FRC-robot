@@ -247,8 +247,8 @@ public class Robot extends SampleRobot {
 
 		double armSpeed = stickAux.getAxis(AxisType.kY) * SETTING_armLiftSpeed;
 		
-		 if ((!digitalInArmUp.get() && armSpeed > 0) || (!digitalInArmDown.get()
-		 && armSpeed < 0)) { armSpeed = 0; }
+		 if ((!digitalInArmUp.get() && armSpeed < 0) || (!digitalInArmDown.get()
+		 && armSpeed > 0)) { armSpeed = 0; }
 		
 		motorArm.set(armSpeed);
 
