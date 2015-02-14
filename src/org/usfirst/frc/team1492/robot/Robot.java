@@ -2,6 +2,8 @@ package org.usfirst.frc.team1492.robot;
 
 import java.util.HashMap;
 
+import org.usfirst.frc.team1492.robot.Action.ActionType;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -42,7 +44,7 @@ public class Robot extends SampleRobot {
 	Joystick stickLeft;
 	Joystick stickRight;
 	Joystick stickAux;
-	boolean[] stickAuxLastButton;
+	//boolean[] stickAuxLastButton;
 
 	double SETTING_hDriveDampening;
 
@@ -66,6 +68,11 @@ public class Robot extends SampleRobot {
 
 	Command autoCommand;
 	SendableChooser autoChooser;
+	
+	private boolean playingTape;
+	private boolean recordingTape;
+	private Tape currentTape;
+	long tapeTick;
 
 	public Robot() {
 		motorLeft = new Talon(1);
@@ -98,7 +105,7 @@ public class Robot extends SampleRobot {
 		stickRight = new Joystick(1);
 		stickAux = new Joystick(2);
 
-		stickAuxLastButton = new boolean[stickAux.getButtonCount()];
+		//stickAuxLastButton = new boolean[stickAux.getButtonCount()];
 		
 
 		autoModes.put(autoModeNone, "None");
@@ -112,6 +119,7 @@ public class Robot extends SampleRobot {
 			autoChooser.addObject(autoModes.get(i), i);
 		}
 		SmartDashboard.putData("Auto Mode", autoChooser);
+		
 	}
 
 	@Override
@@ -148,9 +156,14 @@ public class Robot extends SampleRobot {
 
 			// SmartDashboard.putBoolean("CameraThread Running",
 			// camThread.running);
+			
 
+			recordingTape = SmartDashboard.getBoolean("Record", false);
+			playingTape = SmartDashboard.getBoolean("Play", false);
+			
 			driveControl();
 			manipulatorControl();
+			tapeTick++;
 
 			Timer.delay(0.005);
 		}
@@ -161,7 +174,29 @@ public class Robot extends SampleRobot {
 
 	@Override
 	public void test() {
-
+		
+	}
+	
+	public double getAxis(Joystick stick, AxisType axis){
+		if(playingTape){
+			return currentTape.currentState.getJoystick(stick).axes[axis.value];
+		} else if(recordingTape){
+			if(currentTape.currentState.getJoystick(stick).axes[axis.value] != stick.getAxis(axis)){
+				currentTape.addAction(new ActionAxis(tapeTick, stick, axis.value, stick.getAxis(axis)));
+			}
+		}
+		return stick.getAxis(axis);
+	}
+	
+	public boolean getButton(Joystick stick, int index){
+		if(playingTape){
+			return currentTape.currentState.getJoystick(stick).buttons[index];
+		} else if(recordingTape){
+			if(currentTape.currentState.getJoystick(stick).buttons[index] != stick.getRawButton(index)){
+				currentTape.addAction(new ActionButton(tapeTick, stick, index, stick.getRawButton(index)));
+			}
+		}
+		return stick.getRawButton(index);
 	}
 
 	public void driveControl() {
@@ -169,10 +204,9 @@ public class Robot extends SampleRobot {
 		SETTING_hDriveDampening = SmartDashboard
 				.getNumber("hDriveDampening", 5);
 
-		double leftSide = -stickLeft.getAxis(AxisType.kY);
-		double rightSide = stickRight.getAxis(AxisType.kY);
-		double h = farthestFrom0(stickLeft.getAxis(AxisType.kX),
-				stickRight.getAxis(AxisType.kX));
+		double leftSide = -getAxis(stickLeft, AxisType.kY);
+		double rightSide = getAxis(stickRight, AxisType.kY);
+		double h = farthestFrom0(getAxis(stickLeft, AxisType.kX), getAxis(stickRight, AxisType.kX));
 		h = deadbandScale(h, .2);
 
 		// h /= 2;
@@ -188,11 +222,11 @@ public class Robot extends SampleRobot {
 	public void manipulatorControl() {
 
 		// Calibration:
-		SETTING_motorLiftSpeed = ((-stickAux.getAxis(AxisType.kZ)) / 2) + .5;
+		SETTING_motorLiftSpeed = ((-getAxis(stickAux, AxisType.kZ)) / 2) + .5;
 		SmartDashboard.putNumber("motorLiftSpeed (auxStick)",
 				SETTING_motorLiftSpeed);
 
-		SETTING_armLiftSpeed = ((-stickRight.getAxis(AxisType.kZ)) / 2) + .5;
+		SETTING_armLiftSpeed = ((-getAxis(stickRight, AxisType.kZ)) / 2) + .5;
 		SmartDashboard.putNumber("armLiftSpeed (rightStick)",
 				SETTING_armLiftSpeed);
 		//
@@ -234,10 +268,10 @@ public class Robot extends SampleRobot {
 
 		// Instead of PID
 		double liftSpeed = 0;
-		if (stickAux.getRawButton(3) && digitalInLiftTop.get()) {
+		if (getButton(stickAux, 3) && digitalInLiftTop.get()) {
 			liftSpeed = SETTING_motorLiftSpeed;
 		}
-		if (stickAux.getRawButton(2) && digitalInLiftBottom.get()) {
+		if (getButton(stickAux, 2) && digitalInLiftBottom.get()) {
 			liftSpeed = -SETTING_motorLiftSpeed;
 		}
 		motorLift.set(liftSpeed);
@@ -245,7 +279,7 @@ public class Robot extends SampleRobot {
 
 		// Arm Up/Down
 
-		double armSpeed = stickAux.getAxis(AxisType.kY) * SETTING_armLiftSpeed;
+		double armSpeed = getAxis(stickAux, AxisType.kY) * SETTING_armLiftSpeed;
 		/*
 		 * if ((digitalInArmUp.get() && armSpeed > 0) || (digitalInArmDown.get()
 		 * && armSpeed < 0)) { armSpeed = 0; }
@@ -254,11 +288,11 @@ public class Robot extends SampleRobot {
 
 		// Lift Width in/out
 
-		if (stickAux.getRawButton(4)) { // left out
+		if (getButton(stickAux, 4)) { // left out
 			pistonLiftWidth.set(Value.kForward);
 		}
 
-		if (stickAux.getRawButton(5)) { // right in
+		if (getButton(stickAux, 5)) { // right in
 			pistonLiftWidth.set(Value.kReverse);
 		}
 
@@ -267,21 +301,21 @@ public class Robot extends SampleRobot {
 		// pistonArmTilt1.set(Value.kOff);
 		// pistonArmTilt2.set(Value.kOff);
 
-		if (stickAux.getRawButton(6)) { // tilt forward
+		if (getButton(stickAux, 6)) { // tilt forward
 			pistonArmTilt1.set(Value.kForward);
 			pistonArmTilt2.set(Value.kForward);
 		}
 
-		if (stickAux.getRawButton(7)) { // tilt backward
+		if (getButton(stickAux, 7)) { // tilt backward
 			pistonArmTilt1.set(Value.kReverse);
 			pistonArmTilt2.set(Value.kReverse);
 		}
 
 		//
 
-		for (int i = 1; i < stickAuxLastButton.length; i++) {
+		/*for (int i = 1; i < stickAuxLastButton.length; i++) {
 			stickAuxLastButton[i] = stickAux.getRawButton(7);
-		}
+		}*/
 	}
 
 	double deadbandScale(double input, double threshold) {
