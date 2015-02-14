@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1492.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -52,13 +54,15 @@ public class Robot extends SampleRobot {
 	int liftPosMin = 0;
 
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
+	
+	HashMap<Integer, String> autoModes;
 
-	String autoModeNone = "None";
-	String autoModeMoveForward = "Move Forward";
-	String autoMode2 = "Two";
-	String autoMode3 = "Three";
-
-	String autoMode = autoModeNone;
+	int autoModeNone = 0;
+	int autoModeMoveForward = 1;
+	int autoMode2 = 2;
+	int autoMode3 = 3;
+	
+	int autoMode = autoModeNone;
 
 	Command autoCommand;
 	SendableChooser autoChooser;
@@ -95,24 +99,38 @@ public class Robot extends SampleRobot {
 		stickAux = new Joystick(2);
 
 		stickAuxLastButton = new boolean[stickAux.getButtonCount()];
+		
+
+		autoModes.put(autoModeNone, "None");
+		autoModes.put(autoModeMoveForward, "Forward");
+		autoModes.put(autoMode2, "Auto 2");
+		autoModes.put(autoMode3, "Auto 3");
 
 		autoChooser = new SendableChooser();
-		autoChooser.addDefault("No Auto", autoModeNone);
-		autoChooser.addObject("Forward", autoModeMoveForward);
-		autoChooser.addObject("Auto 2", autoMode2);
-		autoChooser.addObject("Auto 3", autoMode3);
+		autoChooser.addDefault("No Auto", 0);
+		for(int i = 1; i < autoModes.size(); i++){
+			autoChooser.addObject(autoModes.get(i), i);
+		}
 		SmartDashboard.putData("Auto Mode", autoChooser);
 	}
 
 	@Override
 	public void autonomous() {
 
-		autoMode = (String) autoChooser.getSelected();
+		autoMode = (Integer) autoChooser.getSelected();
 
-		SmartDashboard.putString("Start Auto", autoMode);
+		SmartDashboard.putString("Start Auto", autoModes.get(autoMode));
 		SmartDashboard.putString("End Auto", "");
+		
+		if(autoMode == autoModeMoveForward){
+			motorLeft.set(0.5);
+			motorRight.set(0.5);
+			Timer.delay(0.5);
+			motorLeft.set(0);
+			motorRight.set(0);
+		}
 
-		SmartDashboard.putString("End Auto", autoMode);
+		SmartDashboard.putString("End Auto", autoModes.get(autoMode));
 		SmartDashboard.putString("Start Auto", "");
 		autoMode = autoModeNone;
 
