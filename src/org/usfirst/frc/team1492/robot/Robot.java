@@ -85,8 +85,8 @@ public class Robot extends SampleRobot {
 		digitalInLiftTop = new DigitalInput(0);
 		digitalInLiftBottom = new DigitalInput(1);
 
-		digitalInArmUp = new DigitalInput(2);
-		digitalInArmDown = new DigitalInput(3);
+		digitalInArmUp = new DigitalInput(3);
+		digitalInArmDown = new DigitalInput(2);
 
 		/*
 		 * PIDControllerLift = new PIDController(0, 0, 0, analogLift,
@@ -246,10 +246,10 @@ public class Robot extends SampleRobot {
 		// Arm Up/Down
 
 		double armSpeed = stickAux.getAxis(AxisType.kY) * SETTING_armLiftSpeed;
-		/*
-		 * if ((digitalInArmUp.get() && armSpeed > 0) || (digitalInArmDown.get()
-		 * && armSpeed < 0)) { armSpeed = 0; }
-		 */
+		
+		 if ((!digitalInArmUp.get() && armSpeed > 0) || (!digitalInArmDown.get()
+		 && armSpeed < 0)) { armSpeed = 0; }
+		
 		motorArm.set(armSpeed);
 
 		// Lift Width in/out
