@@ -104,6 +104,7 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putData("Auto Mode", autoChooser);
 	}
 
+	@Override
 	public void autonomous() {
 
 		autoMode = (String) autoChooser.getSelected();
@@ -117,6 +118,7 @@ public class Robot extends SampleRobot {
 
 	}
 
+	@Override
 	public void operatorControl() {
 		CameraThread camThread = new CameraThread();
 		camThread.start();
@@ -139,6 +141,7 @@ public class Robot extends SampleRobot {
 		camThread.finish();
 	}
 
+	@Override
 	public void test() {
 
 	}
