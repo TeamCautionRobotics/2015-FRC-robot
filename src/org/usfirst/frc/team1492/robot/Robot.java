@@ -123,11 +123,9 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putString("End Auto", "");
 		
 		if(autoMode == autoModeMoveForward){
-			motorLeft.set(0.5);
-			motorRight.set(0.5);
+			setDriveMotors(0.5, 0.5);
 			Timer.delay(0.5);
-			motorLeft.set(0);
-			motorRight.set(0);
+			setDriveMotors(0, 0);
 		}
 		
 		if(autoMode == autoModePullObject){
@@ -136,11 +134,9 @@ public class Robot extends SampleRobot {
 			motorLift.set(-1);
 			Timer.delay(.5);
 			motorLift.set(0);
-			motorLeft.set(-1);
-			motorRight.set(-1);
+			setDriveMotors(1, 1);
 			Timer.delay(1);
-			motorLeft.set(0);
-			motorRight.set(0);
+			setDriveMotors(0, 0);
 		}
 		
 		if(autoMode == autoModeGrabTotes){
@@ -245,11 +241,7 @@ public class Robot extends SampleRobot {
 
 		// h /= 2;
 
-		motorLeft.set(leftSide);
-
-		motorRight.set(rightSide);
-
-		motorCenter.set(h);
+		setDriveMotors(leftSide, rightSide, h);
 
 	}
 
@@ -362,14 +354,14 @@ public class Robot extends SampleRobot {
 		return (Math.abs(a) > Math.abs(b)) ? a : b;
 	}
 	
-	void driveMotors(double left, double right, double middle) {
+	void setDriveMotors(double left, double right, double middle) {
 		motorLeft.set(left);
 		motorRight.set(right);
 		motorCenter.set(middle);
 	}
 	
-	void driveMotors(double left, double right) {
-		driveMotors(left, right, 0);
+	void setDriveMotors(double left, double right) {
+		setDriveMotors(left, right, 0);
 	}
 
 }
