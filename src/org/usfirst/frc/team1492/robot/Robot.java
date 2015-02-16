@@ -171,6 +171,12 @@ public class Robot extends SampleRobot {
 			motorLift.set(0);//Stop Move Lift Down
 			pistonLiftWidth.set(Value.kReverse);//Grab Tote
 			Timer.delay(.1);
+			setDriveMotors(-1, 1);//Turn Left
+			Timer.delay(1);
+			setDriveMotors(0, 0);//Stop Turn Left
+			setDriveMotors(1, 1);//Move Forward
+			Timer.delay(1);
+			setDriveMotors(0, 0);//Stop Moving Forward
 		}
 
 		SmartDashboard.putString("End Auto", autoModes.get(autoMode));
