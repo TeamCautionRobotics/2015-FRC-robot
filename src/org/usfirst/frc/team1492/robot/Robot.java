@@ -361,5 +361,15 @@ public class Robot extends SampleRobot {
 	double farthestFrom0(double a, double b) {
 		return (Math.abs(a) > Math.abs(b)) ? a : b;
 	}
+	
+	void driveMotors(double left, double right, double middle) {
+		motorLeft.set(left);
+		motorRight.set(right);
+		motorCenter.set(middle);
+	}
+	
+	void driveMotors(double left, double right) {
+		driveMotors(left, right, 0);
+	}
 
 }
