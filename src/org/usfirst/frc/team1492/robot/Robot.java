@@ -140,21 +140,17 @@ public class Robot extends SampleRobot {
 		}
 		
 		if(autoMode == autoModeGrabTotes){
-			motorLeft.set(1);//Move Forward
-			motorRight.set(1);
+			setDriveMotors(1, 1);//Move Forward
 			Timer.delay(.5);
-			motorLeft.set(0);//Stop Moving Forward
-			motorRight.set(1);
+			setDriveMotors(0, 0);//Stop Moving Forward
 			pistonLiftWidth.set(Value.kReverse);//Grab Tote
 			Timer.delay(.1);
 			motorLift.set(-1);//Move Lift Up
 			Timer.delay(1);
 			motorLift.set(0);//Stop Move Lift Up
-			motorLeft.set(1);//Move Forward
-			motorRight.set(1);
+			setDriveMotors(1, 1);//Move Forward
 			Timer.delay(1);
-			motorLeft.set(0);//Stop Move Forward
-			motorRight.set(1);
+			setDriveMotors(0, 0);//Stop Moving Forward
 			pistonLiftWidth.set(Value.kForward);//Release Tote
 			Timer.delay(.1);
 			motorLift.set(1);//Move Lift Down
@@ -165,32 +161,15 @@ public class Robot extends SampleRobot {
 			motorLift.set(-1);//Move Lift Up
 			Timer.delay(1);
 			motorLift.set(0);//Stop Move Lift Up
-			motorLeft.set(0);//Move Forward
-			motorRight.set(0);
+			setDriveMotors(1, 1);//Move Forward
 			Timer.delay(1);
-			motorLeft.set(0);//Stop Move Forward
-			motorRight.set(0);
+			setDriveMotors(0, 0);//Stop Moving Forward
 			pistonLiftWidth.set(Value.kForward);//Release Tote
 			Timer.delay(.1);
 			motorLift.set(1);//Move Lift Down
 			Timer.delay(1);
 			motorLift.set(0);//Stop Move Lift Down
 			pistonLiftWidth.set(Value.kReverse);//Grab Tote
-			Timer.delay(.1);
-			motorLeft.set(-1);//Turn Left
-			motorRight.set(1);
-			Timer.delay(1);
-			motorLeft.set(0);//Stop Turn Left
-			motorRight.set(0);
-			motorLeft.set(1);//Drive Forward
-			motorRight.set(1);
-			Timer.delay(1);
-			motorLeft.set(0);//Stop Driving Forward
-			motorRight.set(0);
-			motorLift.set(1);//Move Lift Down
-			Timer.delay(1);
-			motorLift.set(0);//Stop Move Lift Down
-			pistonLiftWidth.set(Value.kForward);//Release Tote
 			Timer.delay(.1);
 		}
 
