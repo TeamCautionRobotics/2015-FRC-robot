@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,6 +29,7 @@ public class Robot extends SampleRobot {
 	DoubleSolenoid pistonArmTilt1;
 	DoubleSolenoid pistonArmTilt2;
 	DoubleSolenoid pistonLiftWidth;
+	Solenoid pistonCenterSuspension;
 
 	// PIDController PIDControllerLift;
 
@@ -79,6 +81,7 @@ public class Robot extends SampleRobot {
 		pistonArmTilt1 = new DoubleSolenoid(1, 0);
 		pistonArmTilt2 = new DoubleSolenoid(2, 3);
 		pistonLiftWidth = new DoubleSolenoid(4, 5);
+		pistonCenterSuspension = new Solenoid(6);
 
 		analogLift = new AnalogInput(0);
 
@@ -227,6 +230,12 @@ public class Robot extends SampleRobot {
 		// h /= 2;
 
 		setDriveMotors(leftSide, rightSide, h);
+
+		if(stickLeft.getRawButton(1) || stickRight.getRawButton(1)) {
+			pistonCenterSuspension.set(false);
+		} else {
+			pistonCenterSuspension.set(true);
+		}
 
 	}
 
