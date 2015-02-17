@@ -143,9 +143,9 @@ public class Robot extends SampleRobot {
 		}
 		
 		if(autoMode == autoModeGrabTotes){
-			setDriveMotors(1, 1);//Move Forward
-			Timer.delay(.5);
-			setDriveMotors(0, 0);//Stop Moving Forward
+			//setDriveMotors(1, 1);//Move Forward
+			//Timer.delay(.5);
+			//setDriveMotors(0, 0);//Stop Moving Forward
 			pistonLiftWidth.set(Value.kReverse);//Grab Tote
 			Timer.delay(.1);
 			motorLift.set(-1);//Move Lift Up
