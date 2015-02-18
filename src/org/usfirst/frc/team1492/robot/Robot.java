@@ -63,6 +63,7 @@ public class Robot extends SampleRobot {
 	int autoModeMoveForward = 1;
 	int autoModePullObject = 2;
 	int autoModeGrabTotes = 3;
+	int autoModePullCanFromCenter = 4;
 	
 	int autoMode = autoModeNone;
 
@@ -108,6 +109,7 @@ public class Robot extends SampleRobot {
 		autoModes.put(autoModeMoveForward, "Forward");
 		autoModes.put(autoModePullObject, "Pull Can or Tote");
 		autoModes.put(autoModeGrabTotes, "Grab Three Yellow Totes");
+		autoModes.put(autoModePullCanFromCenter, "Pull Can From Center");
 
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", 0);
@@ -180,6 +182,17 @@ public class Robot extends SampleRobot {
 			setDriveMotors(1, 1);//Move Forward
 			Timer.delay(1);
 			setDriveMotors(0, 0);//Stop Moving Forward
+		}
+		
+		if(autoMode == autoModePullCanFromCenter){
+			pistonArmTilt1.set(Value.kForward); // Tilt forward
+			pistonArmTilt2.set(Value.kForward);
+			motorArm.set(-1); // Move arm up
+			Timer.delay(1);
+			motorArm.set(0); // Stop moving arm
+			setDriveMotors(-1, -1); // Drive back
+			Timer.delay(2);
+			setDriveMotors(0, 0); // Stop Driving
 		}
 
 		SmartDashboard.putString("End Auto", autoModes.get(autoMode));
