@@ -190,9 +190,9 @@ public class Robot extends SampleRobot {
 
 	@Override
 	public void operatorControl() {
-		CameraThread camThread = new CameraThread();
+		/*CameraThread camThread = new CameraThread();
 		camThread.start();
-		SmartDashboard.putBoolean("Camera thread working", true);
+		SmartDashboard.putBoolean("Camera thread working", true);*/
 
 		// PIDControllerLift.enable();
 
@@ -208,7 +208,7 @@ public class Robot extends SampleRobot {
 		}
 
 		// PIDControllerLift.disable();
-		camThread.finish();
+		//camThread.finish();
 	}
 
 	@Override
