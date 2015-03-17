@@ -59,11 +59,24 @@ public class Robot extends SampleRobot {
 	
 	HashMap<Integer, String> autoModes = new HashMap<Integer, String>();
 
-	int autoModeNone = 0;
-	int autoModeMoveForward = 1;
-	int autoModePullObject = 2;
-	int autoModeGrabTotes = 3;
-	int autoModePullCanFromCenter = 4;
+	/*
+0*) nothing
+1 ) Drive into Auto Zone from staging zone
+2 ) Drive into Auto Zone over scoring platform
+3*) Grab can and go into auto zone
+4*) Grab can and go into auto zone over scoring platform
+5 ) drive into auto zone from landfill
+6*) grab can off step
+	 */
+	
+	
+	final int autoModeNone = 0;
+	final int autoModeDriveToAutoZone = 1;
+	final int autoModeDriveToAutoZoneOverPlatform = 2;
+	final int autoModeGrabCanAndDriveToAutoZone = 3;
+	final int autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform = 4;
+	final int autoModeDriveIntoAutoZoneFromLandfill = 5;
+	final int autoModeGrabCanOffStep = 6;
 	
 	int autoMode = autoModeNone;
 
@@ -106,10 +119,12 @@ public class Robot extends SampleRobot {
 		
 
 		autoModes.put(autoModeNone, "None");
-		autoModes.put(autoModeMoveForward, "Forward");
-		autoModes.put(autoModePullObject, "Pull Can or Tote");
-		autoModes.put(autoModeGrabTotes, "Grab Three Yellow Totes");
-		autoModes.put(autoModePullCanFromCenter, "Pull Can From Center");
+		autoModes.put(autoModeDriveToAutoZone, "Drive to Auto Zone");
+		autoModes.put(autoModeDriveToAutoZoneOverPlatform, "Drive to Auto Zone Over Platform");
+		autoModes.put(autoModeGrabCanAndDriveToAutoZone, "Grab Can to Auto Zone");
+		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "Grab Can to Auto Zone over Scoring Platform");
+		autoModes.put(autoModeDriveIntoAutoZoneFromLandfill, "(Unimplemented) Drive into Auto Zone from Landfill");
+		autoModes.put(autoModeGrabCanOffStep, "Grab Can off step");
 
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", 0);
@@ -127,72 +142,68 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putString("Start Auto", autoModes.get(autoMode));
 		SmartDashboard.putString("End Auto", "");
 		
-		if(autoMode == autoModeMoveForward){
-			setDriveMotors(0.5, 0.5);
-			Timer.delay(0.5);
-			setDriveMotors(0, 0);
-		}
+		double rotate90DegreeTime = .5; // Time it takes to rotate 90 degrees
 		
-		if(autoMode == autoModePullObject){
-			pistonLiftWidth.set(Value.kReverse);
-			Timer.delay(.1);
-			motorLift.set(-1);
-			Timer.delay(.5);
-			motorLift.set(0);
-			setDriveMotors(1, 1);
-			Timer.delay(1);
-			setDriveMotors(0, 0);
-		}
+		switch(autoMode){
 		
-		if(autoMode == autoModeGrabTotes){
-			//setDriveMotors(1, 1);//Move Forward
-			//Timer.delay(.5);
-			//setDriveMotors(0, 0);//Stop Moving Forward
-			pistonLiftWidth.set(Value.kReverse);//Grab Tote
-			Timer.delay(.1);
-			motorLift.set(-1);//Move Lift Up
-			Timer.delay(1);
-			motorLift.set(0);//Stop Move Lift Up
-			setDriveMotors(1, 1);//Move Forward
-			Timer.delay(1);
-			setDriveMotors(0, 0);//Stop Moving Forward
-			pistonLiftWidth.set(Value.kForward);//Release Tote
-			Timer.delay(.1);
-			motorLift.set(1);//Move Lift Down
-			Timer.delay(1);
-			motorLift.set(0);//Stop Move Lift Down
-			pistonLiftWidth.set(Value.kReverse);//Grab Tote
-			Timer.delay(.1);
-			motorLift.set(-1);//Move Lift Up
-			Timer.delay(1);
-			motorLift.set(0);//Stop Move Lift Up
-			setDriveMotors(1, 1);//Move Forward
-			Timer.delay(1);
-			setDriveMotors(0, 0);//Stop Moving Forward
-			pistonLiftWidth.set(Value.kForward);//Release Tote
-			Timer.delay(.1);
-			motorLift.set(1);//Move Lift Down
-			Timer.delay(1);
-			motorLift.set(0);//Stop Move Lift Down
-			pistonLiftWidth.set(Value.kReverse);//Grab Tote
-			Timer.delay(.1);
-			setDriveMotors(-1, 1);//Turn Left
-			Timer.delay(1);
-			setDriveMotors(0, 0);//Stop Turn Left
-			setDriveMotors(1, 1);//Move Forward
-			Timer.delay(1);
-			setDriveMotors(0, 0);//Stop Moving Forward
-		}
+			case autoModeDriveToAutoZoneOverPlatform:
+			case autoModeDriveToAutoZone:{
+				//move forward
+				setDriveMotors(1, 1);
+				Timer.delay(autoMode == autoModeDriveToAutoZoneOverPlatform? 1.2 : 1); // Time it takes to be enclosed by the Auto Zone
+				setDriveMotors(0, 0);
+				break;
+			}
 		
-		if(autoMode == autoModePullCanFromCenter){
-			pistonArmTilt1.set(Value.kForward); // Tilt forward
-			pistonArmTilt2.set(Value.kForward);
-			motorArm.set(-1); // Move arm up
-			Timer.delay(1);
-			motorArm.set(0); // Stop moving arm
-			setDriveMotors(-1, -1); // Drive back
-			Timer.delay(2);
-			setDriveMotors(0, 0); // Stop Driving
+			case autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform:
+			case autoModeGrabCanAndDriveToAutoZone: {
+				//Start with claws open and almost touching can
+				
+				//close claws
+				pistonLiftWidth.set(Value.kReverse);
+				
+				//lift up
+				motorLift.set(-1);
+				Timer.delay(.5); // Time it takes to lift can
+				motorLift.set(0);
+				
+				//rotate right
+				setDriveMotors(1, -1);
+				Timer.delay(rotate90DegreeTime);
+				setDriveMotors(0, 0);
+				
+				//move forward
+				setDriveMotors(1, 1);
+				Timer.delay(autoMode == autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform? 1.2 : 1); // Time it takes to be enclosed by the Auto Zone
+				setDriveMotors(0, 0);
+				break;
+			}
+			
+			case autoModeGrabCanOffStep:{
+				
+				//Rotate right
+				setDriveMotors(1, -1);
+				Timer.delay(rotate90DegreeTime);
+				setDriveMotors(0, 0);
+				
+				//move forward
+				setDriveMotors(1, 1);
+				Timer.delay(.2);
+				setDriveMotors(0, 0);
+				
+				//extend arm
+				pistonArmTilt1.set(Value.kForward);
+				pistonArmTilt2.set(Value.kForward);
+				while(digitalInArmUp.get()){
+					motorArm.set(-1);
+					Timer.delay(0.1);
+				}
+				
+				
+				
+				
+				break;
+			}
 		}
 
 		SmartDashboard.putString("End Auto", autoModes.get(autoMode));
