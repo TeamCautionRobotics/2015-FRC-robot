@@ -121,8 +121,8 @@ public class Robot extends SampleRobot {
 		autoModes.put(autoModeNone, "None");
 		autoModes.put(autoModeDriveToAutoZone, "Drive to Auto Zone");
 		autoModes.put(autoModeDriveToAutoZoneOverPlatform, "Drive to Auto Zone Over Platform");
-		autoModes.put(autoModeGrabCanAndDriveToAutoZone, "Grab Can to Auto Zone");
-		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "Grab Can to Auto Zone over Scoring Platform");
+		autoModes.put(autoModeGrabCanAndDriveToAutoZone, "Grab Can and drive to Auto Zone");
+		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "Grab Can to and drive Auto Zone over Scoring Platform");
 		autoModes.put(autoModeDriveIntoAutoZoneFromLandfill, "(Unimplemented) Drive into Auto Zone from Landfill");
 		autoModes.put(autoModeGrabCanOffStep, "Grab Can off step");
 
