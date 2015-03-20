@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -40,6 +41,8 @@ public class Robot extends SampleRobot {
 
 	DigitalInput digitalInArmUp;
 	DigitalInput digitalInArmDown;
+
+	PowerDistributionPanel pdp;
 
 	Joystick stickLeft;
 	Joystick stickRight;
@@ -105,6 +108,8 @@ public class Robot extends SampleRobot {
 		digitalInArmUp = new DigitalInput(3);
 		digitalInArmDown = new DigitalInput(2);
 
+		pdp = new PowerDistributionPanel();
+
 		/*
 		 * PIDControllerLift = new PIDController(0, 0, 0, analogLift,
 		 * motorLift); PIDControllerLift.setInputRange(0, 1);
@@ -142,7 +147,7 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putString("Start Auto", autoModes.get(autoMode));
 		SmartDashboard.putString("End Auto", "");
 		
-		double rotate90DegreeTime = .5; // Time it takes to rotate 90 degrees
+		double rotate90DegreeTime = .75; // Time it takes to rotate 90 degrees
 		
 		switch(autoMode){
 		
@@ -160,20 +165,25 @@ public class Robot extends SampleRobot {
 				//Start with claws open and almost touching can
 				
 				//close claws
-				pistonLiftWidth.set(Value.kReverse);
+				pistonLiftWidth.set(Value.kForward);
+				Timer.delay(1);
 				
 				//lift up
-				motorLift.set(-1);
-				Timer.delay(.5); // Time it takes to lift can
+				motorLift.set(.5);
+				Timer.delay(1); // Time it takes to lift can
 				motorLift.set(0);
+				
+				Timer.delay(.5);
 				
 				//rotate right
 				setDriveMotors(1, -1);
 				Timer.delay(rotate90DegreeTime);
 				setDriveMotors(0, 0);
+
+				Timer.delay(.5);
 				
 				//move forward
-				setDriveMotors(1, 1);
+				setDriveMotors(.5, .5);
 				Timer.delay(autoMode == autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform? 1.2 : 1); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
 				break;
@@ -228,6 +238,9 @@ public class Robot extends SampleRobot {
 			driveControl();
 			manipulatorControl();
 
+			SmartDashboard.putNumber("Total current draw", pdp.getTotalCurrent());
+			SmartDashboard.putNumber("Voltage", pdp.getVoltage());
+
 			Timer.delay(0.005);
 		}
 
@@ -246,7 +259,7 @@ public class Robot extends SampleRobot {
 				.getNumber("hDriveDampening", 5);
 
 		double leftSide = -stickLeft.getAxis(AxisType.kY);
-		double rightSide = stickRight.getAxis(AxisType.kY);
+		double rightSide = -stickRight.getAxis(AxisType.kY);
 		double h = farthestFrom0(stickLeft.getAxis(AxisType.kX),
 				stickRight.getAxis(AxisType.kX));
 		h = deadbandScale(h, .2);
@@ -374,7 +387,7 @@ public class Robot extends SampleRobot {
 	
 	void setDriveMotors(double left, double right, double middle) {
 		motorLeft.set(left);
-		motorRight.set(right);
+		motorRight.set(-right);
 		motorCenter.set(middle);
 	}
 	
