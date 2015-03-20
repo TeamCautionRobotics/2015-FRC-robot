@@ -124,12 +124,12 @@ public class Robot extends SampleRobot {
 		
 
 		autoModes.put(autoModeNone, "None");
-		autoModes.put(autoModeDriveToAutoZone, "Drive to Auto Zone");
-		autoModes.put(autoModeDriveToAutoZoneOverPlatform, "Drive to Auto Zone Over Platform");
-		autoModes.put(autoModeGrabCanAndDriveToAutoZone, "Grab Can and drive to Auto Zone");
-		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "Grab Can to and drive Auto Zone over Scoring Platform");
-		autoModes.put(autoModeDriveIntoAutoZoneFromLandfill, "(Unimplemented) Drive into Auto Zone from Landfill");
-		autoModes.put(autoModeGrabCanOffStep, "Grab Can off step");
+		autoModes.put(autoModeDriveToAutoZone, "(Tested) Drive to Auto Zone");
+		autoModes.put(autoModeDriveToAutoZoneOverPlatform, "(Untested) Drive to Auto Zone Over Platform");
+		autoModes.put(autoModeGrabCanAndDriveToAutoZone, "(Tested) Grab Can and drive to Auto Zone");
+		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "(Untested) Grab Can to and drive Auto Zone over Scoring Platform");
+		autoModes.put(autoModeDriveIntoAutoZoneFromLandfill, "(Untested) Drive into Auto Zone from Landfill");
+		autoModes.put(autoModeGrabCanOffStep, "(Untested) Grab Can off step");
 
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", 0);
@@ -153,9 +153,13 @@ public class Robot extends SampleRobot {
 		
 			case autoModeDriveToAutoZoneOverPlatform:
 			case autoModeDriveToAutoZone:{
+				
+				//pull up 5th wheel
+				pistonCenterSuspension.set(false);
+				
 				//move forward
-				setDriveMotors(1, 1);
-				Timer.delay(autoMode == autoModeDriveToAutoZoneOverPlatform? 1.2 : 1); // Time it takes to be enclosed by the Auto Zone
+				setDriveMotors(.5, .5);
+				Timer.delay(autoMode == autoModeDriveToAutoZoneOverPlatform? 2 : 2); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
 				break;
 			}
@@ -184,7 +188,7 @@ public class Robot extends SampleRobot {
 				
 				//move forward
 				setDriveMotors(.5, .5);
-				Timer.delay(autoMode == autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform? 1.2 : 1); // Time it takes to be enclosed by the Auto Zone
+				Timer.delay(autoMode == autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform? .8 : .5); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
 				break;
 			}
@@ -195,21 +199,30 @@ public class Robot extends SampleRobot {
 				setDriveMotors(1, -1);
 				Timer.delay(rotate90DegreeTime);
 				setDriveMotors(0, 0);
+				Timer.delay(.5);
 				
 				//move forward
 				setDriveMotors(1, 1);
 				Timer.delay(.2);
 				setDriveMotors(0, 0);
+				Timer.delay(0.5);
 				
 				//extend arm
 				pistonArmTilt1.set(Value.kForward);
 				pistonArmTilt2.set(Value.kForward);
-				while(digitalInArmUp.get()){
-					motorArm.set(-1);
-					Timer.delay(0.1);
-				}
+				Timer.delay(0.5);
+				motorArm.set(-.5);
+				Timer.delay(0.5);
+				motorArm.set(0);
 				
+				break;
+			}
+			case autoModeDriveIntoAutoZoneFromLandfill:{
 				
+				//H Drive left
+				setDriveMotors(0, 0, 1);
+				Timer.delay(1);
+				setDriveMotors(0, 0, 0);
 				
 				
 				break;
