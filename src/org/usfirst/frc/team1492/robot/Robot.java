@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1492.robot;
 
+//import java.awt.dnd.Autoscroll;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -135,8 +136,14 @@ public class Robot extends SampleRobot {
 
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", 0);
-		for(int i = 1; i < autoModes.size(); i++){
-			autoChooser.addObject(autoModes.get(i), i);
+		int i = 0;
+		int counter = 0;
+		while(counter < autoModes.size()){
+			if(autoModes.containsKey(i)){
+				autoChooser.addObject(autoModes.get(i), i);
+				counter++;
+			}
+			i++;
 		}
 		SmartDashboard.putData("Auto Mode", autoChooser);
 	}
@@ -229,7 +236,36 @@ public class Robot extends SampleRobot {
 				
 				break;
 			}
+			
+			case autoModeGrabToteMoveBack: {
 				
+				//Start with claws open and almost touching can
+				
+				//close claws
+				pistonLiftWidth.set(Value.kForward);
+				Timer.delay(1);
+				
+				//lift up
+				motorLift.set(.5);
+				Timer.delay(1); // Time it takes to lift can
+				motorLift.set(0);
+
+				Timer.delay(.5);
+				
+				//move back
+				setDriveMotors(-.5, -.5);
+				Timer.delay(.5); // Time it takes to be enclosed by the Auto Zone
+				setDriveMotors(0, 0);
+				
+				Timer.delay(.5);
+				
+				//rotate right
+				setDriveMotors(1, -1);
+				Timer.delay(rotate90DegreeTime);
+				setDriveMotors(0, 0);
+				
+				break;
+			}
 		}
 
 		SmartDashboard.putString("End Auto", autoModes.get(autoMode));
