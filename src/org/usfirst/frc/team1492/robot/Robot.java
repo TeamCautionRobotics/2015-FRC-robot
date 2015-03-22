@@ -80,6 +80,7 @@ public class Robot extends SampleRobot {
 	final int autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform = 4;
 	final int autoModeDriveIntoAutoZoneFromLandfill = 5;
 	final int autoModeGrabCanOffStep = 6;
+	final int autoModeGrabToteMoveBack = 7;
 	
 	int autoMode = autoModeNone;
 
@@ -130,6 +131,7 @@ public class Robot extends SampleRobot {
 		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "(Untested) Grab Can to and drive Auto Zone over Scoring Platform");
 		autoModes.put(autoModeDriveIntoAutoZoneFromLandfill, "(Untested) Drive into Auto Zone from Landfill");
 		autoModes.put(autoModeGrabCanOffStep, "(Untested) Grab Can off step");
+		autoModes.put(autoModeGrabToteMoveBack, "(Untested) Grab Tote and move to auto zone");
 
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", 0);
@@ -227,6 +229,7 @@ public class Robot extends SampleRobot {
 				
 				break;
 			}
+				
 		}
 
 		SmartDashboard.putString("End Auto", autoModes.get(autoMode));
