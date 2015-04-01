@@ -81,7 +81,8 @@ public class Robot extends SampleRobot {
 	final int autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform = 4;
 	final int autoModeDriveIntoAutoZoneFromLandfill = 5;
 	final int autoModeGrabCanOffStep = 6;
-	final int autoModeGrabToteMoveBack = 7;
+	final int autoModeGrabToteOrCanMoveBack = 7;
+	final int autoModeGrabToteOrCanMoveBackOverScoringPlatform = 8;
 	
 	int autoMode = autoModeNone;
 
@@ -132,8 +133,9 @@ public class Robot extends SampleRobot {
 		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "(Untested) Grab Can to and drive Auto Zone over Scoring Platform");
 		autoModes.put(autoModeDriveIntoAutoZoneFromLandfill, "(Untested) Drive into Auto Zone from Landfill");
 		autoModes.put(autoModeGrabCanOffStep, "(Untested) Grab Can off step");
-		autoModes.put(autoModeGrabToteMoveBack, "(Untested) Grab Tote and move to auto zone");
-
+		autoModes.put(autoModeGrabToteOrCanMoveBack, "(Untested) Grab Tote or can and move to auto zone");
+		autoModes.put(autoModeGrabToteOrCanMoveBackOverScoringPlatform, "(Untested) Grab Tote or can and move to auto zone (driving over scoring platform)");
+		
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", 0);
 		int i = 0;
@@ -237,7 +239,7 @@ public class Robot extends SampleRobot {
 				break;
 			}
 			
-			case autoModeGrabToteMoveBack: {
+			case autoModeGrabToteOrCanMoveBack: {
 				
 				//Start with claws open and almost touching can
 				
@@ -255,6 +257,36 @@ public class Robot extends SampleRobot {
 				//move back
 				setDriveMotors(-.5, -.5);
 				Timer.delay(.5); // Time it takes to be enclosed by the Auto Zone
+				setDriveMotors(0, 0);
+				
+				Timer.delay(.5);
+				
+				//rotate right
+				setDriveMotors(1, -1);
+				Timer.delay(rotate90DegreeTime);
+				setDriveMotors(0, 0);
+				
+				break;
+			}
+			
+			case autoModeGrabToteOrCanMoveBack: {
+				
+				//Start with claws open and almost touching can
+				
+				//close claws
+				pistonLiftWidth.set(Value.kForward);
+				Timer.delay(1);
+				
+				//lift up
+				motorLift.set(.5);
+				Timer.delay(1); // Time it takes to lift can
+				motorLift.set(0);
+
+				Timer.delay(.5);
+				
+				//move back
+				setDriveMotors(-.5, -.5);
+				Timer.delay(1); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
 				
 				Timer.delay(.5);
