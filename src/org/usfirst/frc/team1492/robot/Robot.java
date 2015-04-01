@@ -269,7 +269,7 @@ public class Robot extends SampleRobot {
 				break;
 			}
 			
-			case autoModeGrabToteOrCanMoveBack: {
+			case autoModeGrabToteOrCanMoveBackOverScoringPlatform: {
 				
 				//Start with claws open and almost touching can
 				
