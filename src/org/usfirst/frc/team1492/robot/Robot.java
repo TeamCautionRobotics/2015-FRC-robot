@@ -170,6 +170,9 @@ public class Robot extends SampleRobot {
 		//pull up 5th wheel
 		pistonCenterSuspension.set(false);
 		
+		double moveShort = 1.8;
+		double moveLong = 2.0;
+		
 		
 		switch(autoMode){
 		
@@ -178,7 +181,7 @@ public class Robot extends SampleRobot {
 				
 				//move forward
 				setDriveMotors(.5, .5);
-				Timer.delay(autoMode == autoModeGrabToZoneOver? .8 : .5); // Time it takes to be enclosed by the Auto Zone
+				Timer.delay(autoMode == autoModeGrabToZoneOver? moveLong : moveShort); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
 
 				Timer.delay(.5);
@@ -208,7 +211,7 @@ public class Robot extends SampleRobot {
 				
 				//move backward
 				setDriveMotors(-.5, -.5);
-				Timer.delay(autoMode == autoModeGrabToZoneOver? .8 : .5); // Time it takes to be enclosed by the Auto Zone
+				Timer.delay(autoMode == autoModeGrabToZoneOver? moveLong : moveShort); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
 				
 				Timer.delay(.5);
