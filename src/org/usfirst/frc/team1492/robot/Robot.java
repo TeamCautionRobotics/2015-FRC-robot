@@ -170,7 +170,7 @@ public class Robot extends SampleRobot {
 		//pull up 5th wheel
 		pistonCenterSuspension.set(false);
 		
-		double moveShort = 1.8;
+		double moveShort = 2.0;
 		double moveLong = 2.0;
 		
 		
