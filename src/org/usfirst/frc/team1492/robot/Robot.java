@@ -109,8 +109,8 @@ public class Robot extends SampleRobot {
 
 		pdp = new PowerDistributionPanel();
 		
-		sonicVex = new Ultrasonic(5, 6);
-		sonicVex.setAutomaticMode(true);
+		//sonicVex = new Ultrasonic(5, 6);
+		//sonicVex.setAutomaticMode(true);
 
 		/*
 		 * PIDControllerLift = new PIDController(0, 0, 0, analogLift,
@@ -279,10 +279,11 @@ public class Robot extends SampleRobot {
 			pistonCenterSuspension.set(true);
 		}
 		
-		double rangeTotalInches = sonicVex.getRangeInches();
-		int rangePartFeet = (int)(rangeTotalInches / 12);
-		int rangePartInches = ((int)rangeTotalInches) % 12;
-		SmartDashboard.putString("Vex Range:", rangePartFeet+"' "+rangePartInches+"\"");
+		//double rangeTotalInches = sonicVex.getRangeInches();
+		//int rangePartFeet = (int)(rangeTotalInches / 12);
+		//int rangePartInches = ((int)rangeTotalInches) % 12;
+		//SmartDashboard.putString("Vex Range:", rangePartFeet+"' "+rangePartInches+"\"");
+		
 		//SmartDashboard.putNumber("Vex Range Feet", rangePartFeet);
 		//SmartDashboard.putNumber("Vex Range Inches", rangePartInches);
 
