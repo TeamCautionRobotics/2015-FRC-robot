@@ -65,27 +65,20 @@ public class Robot extends SampleRobot {
 	double[] liftPosPresets = { 0, .25, .5, .75, 1 };
 	
 	HashMap<Integer, String> autoModes = new HashMap<Integer, String>();
-
-	/*
-0*) nothing
-1 ) Drive into Auto Zone from staging zone
-2 ) Drive into Auto Zone over scoring platform
-3*) Grab can and go into auto zone
-4*) Grab can and go into auto zone over scoring platform
-5 ) drive into auto zone from landfill
-6*) grab can off step
-	 */
-	
 	
 	final int autoModeNone = 0;
-	final int autoModeDriveToAutoZone = 1;
+	final int autoModeToZone = 1;
+	final int autoModeToZoneOver = 2;
+	final int autoModeGrabToZone = 3;
+	final int autoModeGrabToZoneOver = 4;
+	/*final int autoModeDriveToAutoZone = 1;
 	final int autoModeDriveToAutoZoneOverPlatform = 2;
 	final int autoModeGrabCanAndDriveToAutoZone = 3;
 	final int autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform = 4;
 	final int autoModeDriveIntoAutoZoneFromLandfill = 5;
 	final int autoModeGrabCanOffStep = 6;
 	final int autoModeGrabToteOrCanMoveBack = 7;
-	final int autoModeGrabToteOrCanMoveBackOverScoringPlatform = 8;
+	final int autoModeGrabToteOrCanMoveBackOverScoringPlatform = 8;*/
 	
 	int autoMode = autoModeNone;
 
@@ -133,7 +126,11 @@ public class Robot extends SampleRobot {
 		
 
 		autoModes.put(autoModeNone, "None");
-		autoModes.put(autoModeDriveToAutoZone, "(Tested) Drive to Auto Zone");
+		autoModes.put(autoModeToZone, "Move to Zone");
+		autoModes.put(autoModeToZoneOver, "Move over platform to Zone");
+		autoModes.put(autoModeGrabToZone, "Grab and move to zone");
+		autoModes.put(autoModeGrabToZoneOver, "Grab and move over platform to zone");
+		/*autoModes.put(autoModeDriveToAutoZone, "(Tested) Drive to Auto Zone");
 		autoModes.put(autoModeDriveToAutoZoneOverPlatform, "(Untested) Drive to Auto Zone Over Platform");
 		autoModes.put(autoModeGrabCanAndDriveToAutoZone, "(Tested) Grab Can and drive to Auto Zone");
 		autoModes.put(autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform, "(Untested) Grab Can to and drive Auto Zone over Scoring Platform");
@@ -141,7 +138,7 @@ public class Robot extends SampleRobot {
 		autoModes.put(autoModeGrabCanOffStep, "(Untested) Grab Can off step");
 		autoModes.put(autoModeGrabToteOrCanMoveBack, "(Untested) Grab Tote or can and move to auto zone");
 		autoModes.put(autoModeGrabToteOrCanMoveBackOverScoringPlatform, "(Untested) Grab Tote or can and move to auto zone (driving over scoring platform)");
-		
+		*/
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("No Auto", 0);
 		int i = 0;
@@ -165,88 +162,34 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putString("End Auto", "");
 		
 		double rotate90DegreeTime = .75; // Time it takes to rotate 90 degrees
+
+		
+		//pull up 5th wheel
+		pistonCenterSuspension.set(false);
+		
 		
 		switch(autoMode){
 		
-			case autoModeDriveToAutoZoneOverPlatform:
-			case autoModeDriveToAutoZone:{
-				
-				//pull up 5th wheel
-				pistonCenterSuspension.set(false);
+			case autoModeToZoneOver:
+			case autoModeToZone:{
 				
 				//move forward
 				setDriveMotors(.5, .5);
-				Timer.delay(autoMode == autoModeDriveToAutoZoneOverPlatform? 2 : 2); // Time it takes to be enclosed by the Auto Zone
+				Timer.delay(autoMode == autoModeGrabToZoneOver? .8 : .5); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
+
+				Timer.delay(.5);
+				
+				//rotate right
+				setDriveMotors(1, -1);
+				Timer.delay(rotate90DegreeTime);
+				setDriveMotors(0, 0);
+				
 				break;
 			}
 		
-			case autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform:
-			case autoModeGrabCanAndDriveToAutoZone: {
-				//Start with claws open and almost touching can
-				
-				//close claws
-				pistonLiftWidth.set(Value.kForward);
-				Timer.delay(1);
-				
-				//lift up
-				motorLift.set(.5);
-				Timer.delay(1); // Time it takes to lift can
-				motorLift.set(0);
-				
-				Timer.delay(.5);
-				
-				//rotate right
-				setDriveMotors(1, -1);
-				Timer.delay(rotate90DegreeTime);
-				setDriveMotors(0, 0);
-
-				Timer.delay(.5);
-				
-				//move forward
-				setDriveMotors(.5, .5);
-				Timer.delay(autoMode == autoModeGrabCanAndDriveToAutoZoneOverScoringPlatform? .8 : .5); // Time it takes to be enclosed by the Auto Zone
-				setDriveMotors(0, 0);
-				break;
-			}
-			
-			case autoModeGrabCanOffStep:{
-				
-				//Rotate right
-				setDriveMotors(1, -1);
-				Timer.delay(rotate90DegreeTime);
-				setDriveMotors(0, 0);
-				Timer.delay(.5);
-				
-				//move forward
-				setDriveMotors(1, 1);
-				Timer.delay(.2);
-				setDriveMotors(0, 0);
-				Timer.delay(0.5);
-				
-				//extend arm
-				pistonArmTilt1.set(Value.kForward);
-				pistonArmTilt2.set(Value.kForward);
-				Timer.delay(0.5);
-				motorArm.set(-.5);
-				Timer.delay(0.5);
-				motorArm.set(0);
-				
-				break;
-			}
-			case autoModeDriveIntoAutoZoneFromLandfill:{
-				
-				//H Drive left
-				setDriveMotors(0, 0, 1);
-				Timer.delay(1);
-				setDriveMotors(0, 0, 0);
-				
-				
-				break;
-			}
-			
-			case autoModeGrabToteOrCanMoveBack: {
-				
+			case autoModeGrabToZoneOver:
+			case autoModeGrabToZone: {
 				//Start with claws open and almost touching can
 				
 				//close claws
@@ -260,9 +203,9 @@ public class Robot extends SampleRobot {
 
 				Timer.delay(.5);
 				
-				//move back
+				//move backward
 				setDriveMotors(-.5, -.5);
-				Timer.delay(.5); // Time it takes to be enclosed by the Auto Zone
+				Timer.delay(autoMode == autoModeGrabToZoneOver? .8 : .5); // Time it takes to be enclosed by the Auto Zone
 				setDriveMotors(0, 0);
 				
 				Timer.delay(.5);
@@ -271,37 +214,6 @@ public class Robot extends SampleRobot {
 				setDriveMotors(1, -1);
 				Timer.delay(rotate90DegreeTime);
 				setDriveMotors(0, 0);
-				
-				break;
-			}
-			
-			case autoModeGrabToteOrCanMoveBackOverScoringPlatform: {
-				
-				//Start with claws open and almost touching can
-				
-				//close claws
-				pistonLiftWidth.set(Value.kForward);
-				Timer.delay(1);
-				
-				//lift up
-				motorLift.set(.5);
-				Timer.delay(1); // Time it takes to lift can
-				motorLift.set(0);
-
-				Timer.delay(.5);
-				
-				//move back
-				setDriveMotors(-.5, -.5);
-				Timer.delay(1); // Time it takes to be enclosed by the Auto Zone
-				setDriveMotors(0, 0);
-				
-				Timer.delay(.5);
-				
-				//rotate right
-				setDriveMotors(1, -1);
-				Timer.delay(rotate90DegreeTime);
-				setDriveMotors(0, 0);
-				
 				break;
 			}
 		}
