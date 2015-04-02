@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,6 +45,8 @@ public class Robot extends SampleRobot {
 	DigitalInput digitalInArmDown;
 
 	PowerDistributionPanel pdp;
+	
+	Ultrasonic sonicVex;
 
 	Joystick stickLeft;
 	Joystick stickRight;
@@ -112,6 +115,9 @@ public class Robot extends SampleRobot {
 		digitalInArmDown = new DigitalInput(2);
 
 		pdp = new PowerDistributionPanel();
+		
+		sonicVex = new Ultrasonic(5, 6);
+		sonicVex.setAutomaticMode(true);
 
 		/*
 		 * PIDControllerLift = new PIDController(0, 0, 0, analogLift,
@@ -357,7 +363,15 @@ public class Robot extends SampleRobot {
 		} else {
 			pistonCenterSuspension.set(true);
 		}
+		
+		double rangeTotalInches = sonicVex.getRangeInches();
+		int rangePartFeet = (int)(rangeTotalInches / 12);
+		int rangePartInches = ((int)rangeTotalInches) % 12;
+		SmartDashboard.putString("Vex Range:", rangePartFeet+"' "+rangePartInches+"\"");
+		//SmartDashboard.putNumber("Vex Range Feet", rangePartFeet);
+		//SmartDashboard.putNumber("Vex Range Inches", rangePartInches);
 
+		
 	}
 
 	public void manipulatorControl() {
