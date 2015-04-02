@@ -46,7 +46,7 @@ public class Robot extends SampleRobot {
 
 	PowerDistributionPanel pdp;
 	
-	Ultrasonic sonicVex;
+	AnalogInput frontDistanceSensor;
 
 	Joystick stickLeft;
 	Joystick stickRight;
@@ -106,8 +106,11 @@ public class Robot extends SampleRobot {
 
 		digitalInArmUp = new DigitalInput(3);
 		digitalInArmDown = new DigitalInput(2);
+		//schuyler 480 526 1606
 
 		pdp = new PowerDistributionPanel();
+		
+		frontDistanceSensor = new AnalogInput(1);
 		
 		//sonicVex = new Ultrasonic(5, 6);
 		//sonicVex.setAutomaticMode(true);
@@ -278,6 +281,9 @@ public class Robot extends SampleRobot {
 		} else {
 			pistonCenterSuspension.set(true);
 		}
+		
+		double distanceValue = frontDistanceSensor.getValue();
+		SmartDashboard.putNumber("Front Sensor Distance", distanceValue);
 		
 		//double rangeTotalInches = sonicVex.getRangeInches();
 		//int rangePartFeet = (int)(rangeTotalInches / 12);
