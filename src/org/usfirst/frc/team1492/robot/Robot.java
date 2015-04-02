@@ -267,8 +267,11 @@ public class Robot extends SampleRobot {
 		h = deadbandScale(h, .2);
 
 		// h /= 2;
-
-		setDriveMotors(leftSide, rightSide, h);
+		if (stickRight.getRawButton(8)) {
+			setDriveMotors(rightSide, rightSide, 0);
+		} else {
+			setDriveMotors(leftSide, rightSide, h);
+		}
 
 		if(stickLeft.getRawButton(1) || stickRight.getRawButton(1)) {
 			pistonCenterSuspension.set(false);
