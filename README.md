@@ -1,2 +1,2 @@
 # 2015-FRC-robot
-2015 Robot code FRC
+This is the code used for our 2015 FRC robot.
